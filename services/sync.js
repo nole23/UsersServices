@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 var Auth = require('../meddlewares/auth.js');
 
-// router.use('/', Auth.isLogged);
+router.use('/', Auth.isLogged);
 router
     /**
      * Method for get all chat where one user
