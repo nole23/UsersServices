@@ -1,0 +1,92 @@
+const User = require('../models/user.js');
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
+module.exports = {
+    userDTO: function(user) {
+        return {
+           _id: user._id,
+           firstName: user.firstName,
+           lastName: user.lastName,
+           username: user.username,
+           email: user.email,
+           otherInformation: {
+            sex: user.otherInformation.sex,
+            publicMedia: user.otherInformation.publicMedia,
+            dateOfBirth: user.otherInformation.dateOfBirth,
+            adress: user.otherInformation.adress,
+            jobs: user.otherInformation.jobs,
+            about: user.otherInformation.myText
+           }
+        }
+    },
+    findUserByUsername: async function(username) {
+        return User.findOne({username: username}, function(err, user) {
+            return user;
+        })
+    },
+    sendMaile: function(user, verificationToken) {
+        var transporter = nodemailer.createTransport(smtpTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+                type: 'OAuth2',
+                user: 'twoway.owner@gmail.com',
+                pass: 'aplikacija1'
+            }
+        }));
+        var link =  'https://twoway1.herokuapp.com/verify/' + user.username + '/' + verificationToken;
+        console.log("email: " +user.email)
+        var mailOptions = {
+            from:'twoway.owner@gmail.com',
+            to: user.email,
+            subject: "Email Verification",
+            html: "<body><h1>Two Way</h1><br><p>Please click this <a href="+link+">link</a></p></body>"
+        };
+    
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+                return false;
+            } else {
+                console.log('Email sent: ' + info.response);
+                return true;
+            }
+        });
+    },
+
+    sendMaileRestart: function(user) {
+        var transporter = nodemailer.createTransport(smtpTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+                type: 'OAuth2',
+                user: 'twoway.owner@gmail.com',
+                pass: 'aplikacija1'
+            }
+        }));
+        
+        console.log("email: " +user.email)
+        var mailOptions = {
+            from:'twoway.owner@gmail.com',
+            to: user.email,
+            subject: "Email Verification",
+            html: "<body><h1>Two Way</h1><br><p>Your verification code "+user.tokenForRestartPassword+"</p></body>"
+        };
+    
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+                return false;
+            } else {
+                console.log('Email sent: ' + info.response);
+                return true;
+            }
+        });
+    },
+    getRandomInt: function(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+}
