@@ -8,7 +8,7 @@ const UserFriends = require('../models/UserFriends.js');
 const UserImpl = require('../function/userImpl.js');
 
 var ioc = require('socket.io-client');
-var socketc = ioc.connect('http://localhost:8082', {reconnect: true});
+var socketc = ioc.connect('https://twoway-statusservice.herokuapp.com', {reconnect: true});
 
 router
     /**
