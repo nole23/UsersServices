@@ -60,6 +60,7 @@ module.exports = {
                 let status = false;
                 user.friends.listFriends.forEach(element => {
                     status = element._id.toString() === me_id.toString() ? true : false;
+                    break;
                 })
 
                 return {status: 200, user: UserFunction.userDTO(user), friends: status};
