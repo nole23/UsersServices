@@ -59,8 +59,11 @@ module.exports = {
                 if (!user) return {status: 404, message: 'user not found'};
                 let status = false;
                 user.friends.listFriends.forEach(element => {
-                    status = element._id.toString() === me_id.toString() ? true : false;
-                    break;
+                    
+                    if(element._id.toString() === me_id.toString()) {
+                        return status = true;
+                    }
+
                 })
 
                 return {status: 200, user: UserFunction.userDTO(user), friends: status};
