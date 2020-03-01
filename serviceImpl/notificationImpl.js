@@ -10,10 +10,10 @@ module.exports = {
         
             newNotification.owner = me;
             newNotification.friend = friend;
-            newNotification.type = !type ? 'noStructur' : type;
-            newNotification.publication = !publication ? undefined : publication;
-            newNotification.cordinate = !cordinate ? undefined : cordinate;
-            newNotification.image = !image ? undefined : image;
+            newNotification.type = type == null ? 'noStructur' : type;
+            newNotification.publication = publication;
+            newNotification.cordinate = cordinate;
+            newNotification.image = image;
     
             newNotification.save();
         }
