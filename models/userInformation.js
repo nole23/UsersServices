@@ -48,6 +48,20 @@ const UserInformationSchema = new Schema({
         city: {
             type: String,
             required: false
+        },
+        corrdinate: {
+            latitude: {
+                type: String,
+                default: undefined
+            },
+            longitude: {
+                type: String,
+                default: undefined
+            },
+            accuracy:  {
+                type: String,
+                default: undefined
+            }
         }
     },
     jobs: {

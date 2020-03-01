@@ -31,11 +31,35 @@ module.exports = {
                         var likesCount = undefined;
                         var likes = undefined;
                         var comments = undefined;
-                        publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments);
+                        var address = undefined;
+                        publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address);
                         return urlImg;
                         // socket.emit('test', urlImg);
                         // TO DO ovde treba napraviti neki socket koji ce javiti clijentu da je zvrsena izmjena
                     })
+            })
+    },
+    editImageLocal: async function(data) {
+        return UserInformation.findById(data.user.otherInformation)
+            .exec()
+            .then((otherInformation) => {
+                otherInformation.publicMedia.profileImage = data.urlImage;
+                otherInformation.save();
+
+                var user_id = data.user._id;
+                var text = !data.text ? undefined : data.data;
+                var image = !data.urlImage ? undefined : data.urlImage;
+                var datePublish = new Date;
+                var likesCount = undefined;
+                var likes = undefined;
+                var comments = undefined;
+                var address = undefined;
+                publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address);
+                
+                return {status: 200, message: 'Save is succesifful'}
+            })
+            .catch((err) => {
+                return {status: 404, message: 'Server error'}
             })
     }
 }

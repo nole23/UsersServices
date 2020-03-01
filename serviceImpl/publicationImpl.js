@@ -1,5 +1,10 @@
 var Publication = require('../models/publication.js');
 var userImpl = require('../function/userImpl.js');
+const notificationImpl = require('../serviceImpl/notificationImpl.js');
+
+var ioc = require('socket.io-client');
+var socketc = ioc.connect('https://twoway1.herokuapp.com/', {reconnect: true});
+
 module.exports = {
 
     getAllPublicationById: async function(id, limit, page, me) {
@@ -48,7 +53,7 @@ module.exports = {
             comments: item.comments
         }
     },
-    savePublicaton: function(user_id, text, image, datePublish, likesCount, likes, comments) {
+    savePublicaton: function(user_id, text, image, datePublish, likesCount, likes, comments, address) {
         if (!user_id) { 
             console.log('System not found - dont id user')
             return null;
@@ -83,6 +88,7 @@ module.exports = {
 
         newPublication.save();
 
+        socketc.emit('autoPublication-' + user_id, newPublication);
         // TODO Ovo proslediti metodi koja sheruje na sve strane
     },
     like: async function(user_id, publication_id, me) {
@@ -91,6 +97,7 @@ module.exports = {
             .then((publication) => {
                 publication.likes.push(me._id);
                 publication.save();
+                notificationImpl.addNotification(me._id, user_id, 'like', publication._id, null, null)
                 return {status: 200, message: ''}
             })
             .catch((err) => {
@@ -120,6 +127,7 @@ module.exports = {
                 }
                 publication.comments.push(data);
                 publication.save();
+                notificationImpl.addNotification(me._id, user_id, 'comment', publication._id, null, null)
                 return {status: 200, like: ''}
             })
             .catch((err) => {

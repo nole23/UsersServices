@@ -1,6 +1,8 @@
 const User = require('../models/user.js');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
+const openGeocoder = require('node-open-geocoder');
+var UserInformation = require('../models/userInformation.js');
 
 module.exports = {
     userDTO: function(user) {
@@ -88,5 +90,21 @@ module.exports = {
     },
     getRandomInt: function(max) {
         return Math.floor(Math.random() * Math.floor(max));
+    },
+    geolocation: function(address, _id) {
+        openGeocoder().geocode(address.city.toString()).end((err, corr) => {
+            var corrdinate = {
+                latitude: corr[0].lat,
+                longitude: corr[0].lon,
+                accuracy: corr[0].osm_id
+            }
+            
+            UserInformation.findById(_id)
+            .exec()
+            .then((userInformation) => {
+                userInformation.adress.corrdinate = corrdinate
+                userInformation.save();
+            })
+        })
     }
 }

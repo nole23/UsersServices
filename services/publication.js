@@ -38,12 +38,19 @@ router
         console.log(isSave)
         return res.status(isSave.status).send({message: isSave.like});
     })
+    .post('/location', async function(req, res) {
+        var body = req.body;
+        var me = res.locals;
+        console.log(body)
+        return 'null'
+    })
     .put('/', async function(req, res) {
         var user_id = req.body['user'];
         var publication_id = req.body['publication'];
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.like(user_id, publication_id, me);
+        // Ovde treba napraviti metodu koja javlja sta se uradilo i kreira notifikaciju
         return res.status(isSave.status).send({publication: isSave.like});
     })
     .put('/remove', async function(req, res) {

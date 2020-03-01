@@ -151,7 +151,7 @@ router
     .put('/information', function (req, res) {
         var data = req.body;
         var me = res.locals.currUser;
-
+        
         var object = {
             myText: !data.about ? undefined : data.about,
             adress: {

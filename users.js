@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const mongoSanitize = require('express-mongo-sanitize');
 const MediaImpl = require('./serviceImpl/mediaImpl.js');
 const SyncImpl = require('./serviceImpl/syncImpl.js');
+const NotificationImpl = require('./serviceImpl/notificationImpl.js');
 
 var mongodbUri = "mongodb://nole23:novica23@ds135796.mlab.com:35796/twoway_user"
 mongoose.connect(mongodbUri, {useNewUrlParser: true});
@@ -27,6 +28,8 @@ var publication = require('./services/publication.js');
 var relationships = require('./services/relationships.js')
 var media = require('./services/media.js');
 var sync = require('./services/sync');
+var geolocation = require('./services/geolocation');
+var notification = require('./services/notification.js');
 
 var port = process.env.PORT || 8080;
 app.use(function (req, res, next) {
@@ -44,6 +47,8 @@ app.use('/api/publication', publication);
 app.use('/api/relationships', relationships);
 app.use('/api/media', media);
 app.use('/api/sync', sync);
+app.use('/api/geolocation', geolocation);
+app.use('/api/notification', notification);
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -56,6 +61,16 @@ io.on('connection', function (socket) {
 
     socket.on('publication', function (data) {
         SyncImpl.publication(data);
+    });
+
+    socket.on('notification', function (data) {
+        NotificationImpl.addNotification(
+            data.friend,
+            data.me,
+            data.type,
+            data.publication,
+            data.cordinate,
+            data.image);
     });
 });
 

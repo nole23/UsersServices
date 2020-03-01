@@ -1,6 +1,7 @@
 var User = require('../models/user.js');
 var UserInformation = require('../models/userInformation.js');
 var UserFunction = require('../function/userImpl.js');
+
 module.exports = {
 
     getListUser: async function(listFriends, limit, page) {
@@ -123,8 +124,7 @@ module.exports = {
                 return false;
             })
     },
-    editInformation: function(_id, object) {
-        console.log(_id)
+    editInformation: async function(_id, object) {
         return UserInformation.findById(_id)
             .exec()
             .then((userInformation) => {
@@ -132,11 +132,29 @@ module.exports = {
                 userInformation.adress = !object.adress ? undefined : object.adress;
                 userInformation.jobs = !object.jobs ? undefined : object.jobs;
                 userInformation.myText = !object.myText ? undefined : object.myText;
+
                 userInformation.save();
+                
+                UserFunction.geolocation(object.adress, _id);
                 return true;
+                
             })
             .catch((err) => {
                 return false;
             })
+    },
+    setNewCordinate: function(geolocation, me) {
+        UserInformation.findById(me.currUser.otherInformation)
+        .exec()
+        .then((userInformation) => {
+
+            userInformation.adress.corrdinate = geolocation;
+            userInformation.save();
+
+            // TODO Dodati notifikaciju koja kaze gdje je 
+        })
+        .catch((error) => {
+            console.log('greska na serveru')
+        })
     }
 }
