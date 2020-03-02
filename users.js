@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const mongoSanitize = require('express-mongo-sanitize');
 const MediaImpl = require('./serviceImpl/mediaImpl.js');
 const SyncImpl = require('./serviceImpl/syncImpl.js');
+const PublicationImpl = require('./serviceImpl/publicationImpl.js');
 const NotificationImpl = require('./serviceImpl/notificationImpl.js');
 
 var mongodbUri = "mongodb://nole23:novica23@ds135796.mlab.com:35796/twoway_user"
@@ -60,7 +61,17 @@ io.on('connection', function (socket) {
     });
 
     socket.on('publication', function (data) {
-        SyncImpl.publication(data);
+        PublicationImpl.savePublicaton(
+            data.user_id,
+            data.text,
+            data.image,
+            data.datePublish,
+            data.likesCount,
+            data.likes,
+            data.comments,
+            data.address,
+            data.friends
+        );
     });
 
     socket.on('notification', function (data) {
