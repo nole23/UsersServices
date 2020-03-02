@@ -14,9 +14,44 @@ var PublicationSchema = new Schema({
         type: String,
         default: null
     },
-    // location: {
-    //     // ToDoo
-    // },
+    location: {
+        corrdinate: {
+            latitude: {
+                type: String,
+                default: undefined
+            },
+            longitude: {
+                type: String,
+                default: undefined
+            },
+            accuracy:  {
+                type: String,
+                default: undefined
+            }
+        },
+        address: {
+            road: {
+                type: String,
+                default: undefined
+            },
+            neighbourhood: {
+                type: String,
+                default: undefined
+            },
+            city: {
+                type: String,
+                default: undefined
+            },
+            country: {
+                type: String,
+                default: undefined
+            }
+        }
+    },
+    friends: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     datePublish: {
         type: Date,
         default: Date.now

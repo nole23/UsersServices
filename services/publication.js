@@ -35,14 +35,53 @@ router
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
-        console.log(isSave)
         return res.status(isSave.status).send({message: isSave.like});
     })
-    .post('/location', async function(req, res) {
+    .post('/location', function(req, res) {
         var body = req.body;
         var me = res.locals;
-        console.log(body)
-        return 'null'
+
+        var newaddress = {
+            corrdinate: {
+                latitude: body.address.lat,
+                longitude: body.address.lon,
+                accuracy: body.address.osm_id
+            },
+            address: {
+                road: body.address.address.road,
+                neighbourhood: body.address.address.neighbourhood,
+                city: body.address.address.city,
+                country: body.address.address.country
+            }
+        }
+
+        publicationImpl.savePublicaton(
+            me._id,
+            body.message,
+            null,
+            new Date(),
+            null,
+            null,
+            null,
+            newaddress,
+            body.friends
+        );
+
+        
+        var odg = {
+            user_id: me._id,
+            text: body.message,
+            image: null,
+            datePublish: new Date(),
+            likes: [],
+            comments: [],
+            showPublication: {
+                removeStatus: false
+            },
+            location: newaddress,
+            friends: body.friends
+        }
+        return res.status(200).send(odg)
     })
     .put('/', async function(req, res) {
         var user_id = req.body['user'];

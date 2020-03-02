@@ -46,14 +46,14 @@ module.exports = {
             user_id: userImpl.userDTO(item.user_id),
             text: item.text,
             image: item.image,
-            //location: item.location
+            location: !item.location.corrdinate.latitude ? null : item.location,
             datePublish: item.datePublish,
             likesCount: item.likes.lenght,
             likes: item.likes,
             comments: item.comments
         }
     },
-    savePublicaton: function(user_id, text, image, datePublish, likesCount, likes, comments, address) {
+    savePublicaton: function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = []) {
         if (!user_id) { 
             console.log('System not found - dont id user')
             return null;
@@ -85,6 +85,8 @@ module.exports = {
         newPublication.datePublish = datePublish;
         newPublication.likes = likes;
         newPublication.comments = comments;
+        newPublication.location = address;
+        newPublication.friends = friends;
 
         newPublication.save();
 
