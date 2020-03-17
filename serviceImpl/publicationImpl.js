@@ -124,12 +124,12 @@ module.exports = {
             .then(publication => {
                 var data = {
                     user: me._id,
-                    dateComent: object.dateOfComments,
+                    dateComent: object.dateComent,
                     text: object.text
                 }
                 publication.comments.push(data);
                 publication.save();
-                notificationImpl.addNotification(me._id, user_id, 'comment', publication._id, null, null)
+                notificationImpl.addNotification(me._id, publication.user_id, 'comment', publication._id, null, null)
                 return {status: 200, like: ''}
             })
             .catch((err) => {

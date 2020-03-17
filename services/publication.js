@@ -30,11 +30,13 @@ router
         return res.status(listPublication.status).send({publication: listPublication.publication});
     })
     .post('/', async function(req, res) {
+        console.log('dosao ovde')
         var item = req.body['item'];
         var object = req.body['object'];
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
+        console.log(isSave)
         return res.status(isSave.status).send({message: isSave.like});
     })
     .post('/location', function(req, res) {
