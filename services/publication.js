@@ -39,10 +39,10 @@ router
         console.log(isSave)
         return res.status(isSave.status).send({message: isSave.like});
     })
-    .post('/location', function(req, res) {
+    .post('/location', async function(req, res) {
         var body = req.body;
         var me = res.locals;
-
+        
         var newaddress = {
             corrdinate: {
                 latitude: body.address.lat,
@@ -57,7 +57,7 @@ router
             }
         }
 
-        publicationImpl.savePublicaton(
+        var data = await publicationImpl.savePublicaton(
             me._id,
             body.message,
             null,
@@ -68,9 +68,9 @@ router
             newaddress,
             body.friends
         );
-
         
         var odg = {
+            _id: data._id,
             user_id: me._id,
             text: body.message,
             image: null,

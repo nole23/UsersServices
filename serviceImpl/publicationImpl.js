@@ -53,7 +53,7 @@ module.exports = {
             comments: item.comments
         }
     },
-    savePublicaton: function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = []) {
+    savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = []) {
         if (!user_id) { 
             console.log('System not found - dont id user')
             return null;
@@ -92,6 +92,8 @@ module.exports = {
 
         socketc.emit('autoPublication-' + user_id, newPublication);
         // TODO Ovo proslediti metodi koja sheruje na sve strane
+
+        return newPublication;
     },
     like: async function(user_id, publication_id, me) {
         return Publication.findById(publication_id)
