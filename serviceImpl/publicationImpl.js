@@ -50,7 +50,8 @@ module.exports = {
             datePublish: item.datePublish,
             likesCount: item.likes.lenght,
             likes: item.likes,
-            comments: item.comments
+            comments: item.comments,
+            type: item.type
         }
     },
     savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = [], type = null) {
