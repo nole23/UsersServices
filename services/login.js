@@ -6,6 +6,7 @@ const UserInformation = require('../models/userInformation.js');
 const User = require('../models/user.js');
 const UserFriends = require('../models/UserFriends.js');
 const UserImpl = require('../function/userImpl.js');
+const options = require('../configuration/options.js');
 
 var ioc = require('socket.io-client');
 var socketc = ioc.connect('https://twoway-statusservice.herokuapp.com', {reconnect: true});
@@ -101,7 +102,12 @@ router
                     
                     var token = jwt.encode(secret, 'XWSMeanDevelopment');
                     socketc.emit('status', user);
-                    return res.status(200).send({user: UserImpl.userDTO(user), token: token});
+                    
+
+                    var defaultOptions = {
+                        global: options
+                    }
+                    return res.status(200).send({user: UserImpl.userDTO(user), token: token, defaultOptions: defaultOptions});
                 }
             })
             .catch((err) =>{

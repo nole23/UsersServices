@@ -32,7 +32,8 @@ module.exports = {
                         var likes = undefined;
                         var comments = undefined;
                         var address = undefined;
-                        publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address);
+                        var type = data.data;
+                        publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address, type);
                         return urlImg;
                         // socket.emit('test', urlImg);
                         // TO DO ovde treba napraviti neki socket koji ce javiti clijentu da je zvrsena izmjena
@@ -54,7 +55,8 @@ module.exports = {
                 var likes = undefined;
                 var comments = undefined;
                 var address = undefined;
-                publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address);
+                var type = 'location';
+                publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address, type);
                 
                 return {status: 200, message: 'Save is succesifful'}
             })

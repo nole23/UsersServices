@@ -66,7 +66,8 @@ router
             null,
             null,
             newaddress,
-            body.friends
+            body.friends,
+            'location'
         );
         
         var odg = {

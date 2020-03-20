@@ -70,7 +70,8 @@ io.on('connection', function (socket) {
             data.likes,
             data.comments,
             data.address,
-            data.friends
+            data.friends,
+            data.type
         );
     });
 

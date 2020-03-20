@@ -48,6 +48,10 @@ var PublicationSchema = new Schema({
             }
         }
     },
+    type: {
+        type: String,
+        default: undefined
+    },
     friends: [{
         type: Schema.Types.ObjectId,
         ref: 'User'

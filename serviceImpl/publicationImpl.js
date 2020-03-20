@@ -53,7 +53,7 @@ module.exports = {
             comments: item.comments
         }
     },
-    savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = []) {
+    savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = [], type = null) {
         if (!user_id) { 
             console.log('System not found - dont id user')
             return null;
@@ -87,6 +87,7 @@ module.exports = {
         newPublication.comments = comments;
         newPublication.location = address;
         newPublication.friends = friends;
+        newPublication.type = type;
 
         newPublication.save();
 
