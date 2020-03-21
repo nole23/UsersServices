@@ -7,7 +7,7 @@ var socketc = ioc.connect('https://twoway1.herokuapp.com/', {reconnect: true});
 
 module.exports = {
 
-    getAllPublicationById: async function(id, limit, page, me) {
+    getAllPublicationById: async function(id, me_id, limit, page, me) {
         return Publication.find({user_id: id})
             .sort({datePublish: -1})
             .limit(limit)
@@ -31,8 +31,12 @@ module.exports = {
                 if (publications !== null) {
                     var listPublication = [];
                     publications.forEach(item => {
-                        if (!item.showPublication.removeStatus) {
+                        if (id.toString() == me_id.toString()) {
                             listPublication.push(this.publicationDTO(item))
+                        } else {
+                            if (!item.showPublication.removeStatus) {
+                                listPublication.push(this.publicationDTO(item))
+                            }
                         }
                     })
 
@@ -51,7 +55,8 @@ module.exports = {
             likesCount: item.likes.lenght,
             likes: item.likes,
             comments: item.comments,
-            type: item.type
+            type: item.type,
+            showPublication: !item.showPublication ? null : item.showPublication
         }
     },
     savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = [], type = null) {

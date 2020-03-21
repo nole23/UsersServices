@@ -25,7 +25,9 @@ router
      */
     .get('/:id', async function(req, res) {
         var user_id = req.params.id;
-        var listPublication = await publicationImpl.getAllPublicationById(user_id, 20, 0);
+        var me = res.locals.currUser;
+
+        var listPublication = await publicationImpl.getAllPublicationById(user_id, me._id, 20, 0);
         
         return res.status(listPublication.status).send({publication: listPublication.publication});
     })
