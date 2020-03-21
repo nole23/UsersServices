@@ -82,6 +82,10 @@ var PublicationSchema = new Schema({
             type: Boolean,
             default: false
         },
+        justFriends: {
+            type: Boolean,
+            default: false
+        },
         noFriendShow: [{
             type: Schema.Types.ObjectId,
             ref: 'User'

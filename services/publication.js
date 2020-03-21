@@ -32,13 +32,11 @@ router
         return res.status(listPublication.status).send({publication: listPublication.publication});
     })
     .post('/', async function(req, res) {
-        console.log('dosao ovde')
         var item = req.body['item'];
         var object = req.body['object'];
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
-        console.log(isSave)
         return res.status(isSave.status).send({message: isSave.like});
     })
     .post('/location', async function(req, res) {
@@ -104,6 +102,62 @@ router
 
         var isSave = await publicationImpl.disLike(user_id, publication_id, me);
         return res.status(isSave.status).send({publication: isSave.like});
+    })
+    .put('/status/:type', function(req, res) {
+        var me = res.locals.currUser;
+        var type = req.params.type; // Mozda nekad ako se promjeni arhitektura
+        var item = req.body;
+
+        if (me._id.toString() == item.user_id._id.toString()) {
+
+            if (type === 'friends') {
+                item.showPublication.removeStatus = false;
+                item.showPublication.justFriends = true;
+            } else if (type === 'show') {
+                item.showPublication.removeStatus = false;
+                item.showPublication.justFriends = false;
+            } else if (type === 'hide') {
+                item.showPublication.removeStatus = true;
+                item.showPublication.justFriends = false;
+            }
+
+            var isSave = publicationImpl.showHidePorfile(item);
+            return res.status(200).send({message: 'success'})
+        } else {
+            return res.status(200).send({message: 'error'})
+        }
+    })
+    .put('/public-again/:id', async function(req, res) {
+        var _id = req.params.id;
+        var me = res.locals.currUser;
+
+        var data = await publicationImpl.publicAgain(_id, me);
+        if (data.message != null) {
+            var save = await publicationImpl.savePublicaton(
+                me._id,
+                data['message']['text'],
+                data['message']['image'],
+                new Date(),
+                null,
+                null,
+                null,
+                data['message']['location'],
+                null,
+                'again'
+            )
+
+            return res.status(data.status).send({message: save})
+        } else {
+            return res.status(data.status).send({message: data.message})
+        }
+        
+    })
+    .delete('/:id', async function(req, res) {
+        var _id = req.params.id;
+        var me = res.locals.currUser;
+
+        var data = await publicationImpl.delete(_id, me);
+        return res.status(data.status).send({message: data.message})
     })
 
 module.exports = router;

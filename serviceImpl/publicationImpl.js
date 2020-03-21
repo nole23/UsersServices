@@ -144,5 +144,60 @@ module.exports = {
             .catch((err) => {
                 return {status: 404, like: ''}
             })
+    },
+    showHidePorfile: function(item) {
+        Publication.findById(item._id)
+        .exec()
+        .then(publication => {
+
+            publication.showPublication.justFriends = item.showPublication.justFriends;
+            publication.showPublication.removeStatus = item.showPublication.removeStatus;
+
+            publication.save();
+            // console.log(publication)
+        })
+        .catch((err) => {
+            return {status: 404, like: ''}
+        })
+    },
+    publicAgain: async function(id, me) {
+        return Publication.findById(id)
+            .exec()
+            .then((publication) => {
+
+                if (publication.user_id.toString() == me._id.toString()) {
+                    if (publication != null || publication != undefined) {
+                        return {status: 200, message: publication}
+                    } else {
+                        return {status: 200, message: null}
+                    }
+                } else {
+                    return {status: 404, message: 'permision'}
+                }
+                
+            })
+            .catch((err) => {
+                return {status: 404, message: 'not save'}
+            })
+    },
+    delete: async function(id, me) {
+        return Publication.findById(id)
+            .exec()
+            .then(publication => {
+
+                if (publication.user_id.toString() == me._id.toString()) {
+                    if (publication != null || publication != undefined) {
+                        publication.remove();
+                        return {status: 200, message: publication}
+                    } else {
+                        return {status: 200, message: 'error'}
+                    }
+                } else {
+                    return {status: 404, message: 'permision'}
+                }
+            })
+            .catch((err) => {
+                return {status: 404, message: 'error'}
+            })
     }
 }
