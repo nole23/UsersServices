@@ -56,10 +56,23 @@ module.exports = {
             likes: item.likes,
             comments: item.comments,
             type: item.type,
-            showPublication: !item.showPublication ? null : item.showPublication
+            showPublication: !item.showPublication ? null : item.showPublication,
+            img_id: !item.img_id ? null : item.img_id
         }
     },
-    savePublicaton: async function(user_id, text, image, datePublish, likesCount, likes, comments, address = null, friends = [], type = null) {
+    savePublicaton: async function(
+        user_id,
+        text,
+        image,
+        datePublish,
+        likesCount,
+        likes,
+        comments,
+        address = null,
+        friends = [],
+        type = null,
+        img_id = null
+    ) {
         if (!user_id) { 
             console.log('System not found - dont id user')
             return null;
@@ -84,6 +97,7 @@ module.exports = {
         if (!text) { 
             text = null;
         }
+
         var newPublication = new Publication();
         newPublication.user_id = user_id;
         newPublication.text = text;
@@ -94,6 +108,7 @@ module.exports = {
         newPublication.location = address;
         newPublication.friends = friends;
         newPublication.type = type;
+        newPublication.img_id = img_id;
 
         newPublication.save();
 
@@ -154,7 +169,6 @@ module.exports = {
             publication.showPublication.removeStatus = item.showPublication.removeStatus;
 
             publication.save();
-            // console.log(publication)
         })
         .catch((err) => {
             return {status: 404, like: ''}

@@ -14,6 +14,11 @@ var PublicationSchema = new Schema({
         type: String,
         default: null
     },
+    img_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'Media',
+        default: null
+    },
     location: {
         corrdinate: {
             latitude: {

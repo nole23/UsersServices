@@ -67,7 +67,8 @@ router
             null,
             newaddress,
             body.friends,
-            'location'
+            'location',
+            null
         );
         
         var odg = {
@@ -85,6 +86,26 @@ router
             friends: body.friends
         }
         return res.status(200).send(odg)
+    })
+    .post('/text', async function(req, res) {
+        var body = req.body;
+        var me = res.locals;
+
+        var data = await publicationImpl.savePublicaton(
+            me._id,
+            body['message'],
+            null,
+            new Date(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            'text',
+            null
+        );
+
+        return res.status(200).send(data);
     })
     .put('/', async function(req, res) {
         var user_id = req.body['user'];
@@ -143,7 +164,8 @@ router
                 null,
                 data['message']['location'],
                 null,
-                'again'
+                'again',
+                null
             )
 
             return res.status(data.status).send({message: save})

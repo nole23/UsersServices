@@ -71,7 +71,8 @@ io.on('connection', function (socket) {
             data.comments,
             data.address,
             data.friends,
-            data.type
+            data.type,
+            data.img_id
         );
     });
 

@@ -20,7 +20,6 @@ module.exports = {
                 return UserInformation.findById(user.otherInformation)
                     .exec()
                     .then((ui) =>{
-                        // console.log(urlImg)
                         ui.publicMedia.profileImage = urlImg;
                         ui.save();
 
@@ -33,7 +32,18 @@ module.exports = {
                         var comments = undefined;
                         var address = undefined;
                         var type = data.data;
-                        publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address, type);
+                        publicationImpl.savePublicaton(
+                            user_id,
+                            text,
+                            image,
+                            datePublish,
+                            likesCount,
+                            likes,
+                            comments,
+                            address,
+                            type,
+                            data.img_id
+                        );
                         return urlImg;
                         // socket.emit('test', urlImg);
                         // TO DO ovde treba napraviti neki socket koji ce javiti clijentu da je zvrsena izmjena
@@ -56,7 +66,18 @@ module.exports = {
                 var comments = undefined;
                 var address = undefined;
                 var type = 'location';
-                publicationImpl.savePublicaton(user_id, text, image, datePublish, likesCount, likes, comments, address, type);
+                publicationImpl.savePublicaton(
+                    user_id,
+                    text,
+                    image,
+                    datePublish,
+                    likesCount,
+                    likes,
+                    comments,
+                    address,
+                    type,
+                    null
+                );
                 
                 return {status: 200, message: 'Save is succesifful'}
             })
