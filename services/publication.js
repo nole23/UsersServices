@@ -31,6 +31,14 @@ router
         
         return res.status(listPublication.status).send({publication: listPublication.publication});
     })
+    .get('/image/:id', async function(req, res) {
+        var id = req.params.id;
+        var me = res.locals.currUser;
+
+        var publicOfPicture = await publicationImpl.getPublicByPicture(id, me);
+
+        return res.status(publicOfPicture.status).send({publication: publicOfPicture.message})
+    })
     .post('/', async function(req, res) {
         var item = req.body['item'];
         var object = req.body['object'];

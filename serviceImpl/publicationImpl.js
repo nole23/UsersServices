@@ -25,6 +25,11 @@ module.exports = {
                 populate: [{
                  path: 'otherInformation'
                 }] 
+             }).populate({ 
+                path: 'user_id',
+                populate: [{
+                 path: 'otherInformation'
+                }] 
              })
             .exec()
             .then((publications) => {
@@ -42,6 +47,31 @@ module.exports = {
 
                     return {status: 200, publication: listPublication}
                 }
+            })
+    },
+    getPublicByPicture: async function(id, me) {
+        return Publication.findOne({img_id: id})
+            .populate('user_id')
+            .populate({ 
+                path: 'user_id',
+                populate: [{
+                 path: 'otherInformation'
+                }] 
+             })
+            .exec()
+            .then((publication) => {
+                if (publication !== null) {
+                    if (publication.user_id._id.toString() == me._id.toString()) {
+                        return {status: 200, message: this.publicationDTO(publication)};
+                    } else {
+                        return {status: 200, message: 'ERROR_TYPE_PREMISION'};
+                    }
+                } else {
+                    return {status: 200, message: 'ERROR_TYPE_NULL'};
+                }
+            })
+            .catch((err) =>{
+                return {status: 503, message: 'ERROR_TYPE_SERVER'};
             })
     },
     publicationDTO: function(item) {

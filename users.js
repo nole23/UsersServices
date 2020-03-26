@@ -56,11 +56,11 @@ var io = require('socket.io')(http);
 
 io.on('connection', function (socket) {
     console.log('connected:', socket.client.id);
-    socket.on('serverEvent', function (data) {
+    socket.on('imageProfil', function (data) {
         MediaImpl.editImage(data);
     });
 
-    socket.on('publication', function (data) {
+    socket.on('imagePublic', function (data) {
         PublicationImpl.savePublicaton(
             data.user_id,
             data.text,
@@ -84,6 +84,10 @@ io.on('connection', function (socket) {
             data.publication,
             data.cordinate,
             data.image);
+    });
+
+    socket.on('test1', function (data) {
+        console.log('dosao je ovde socket')
     });
 });
 

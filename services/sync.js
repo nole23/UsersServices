@@ -8,7 +8,7 @@ router
      * Method for get all chat where one user
      */
     .get('/', function(req, res) {
-        console.log('upao')
+        console.log('upao u sink')
         res.status(200)
         res.setHeader('Content-Type', 'application/json')
         res.setHeader('Content-Disposition', `attachment;filename=`)
