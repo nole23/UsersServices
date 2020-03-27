@@ -4,7 +4,7 @@ var UserFunction = require('../function/userImpl.js');
 
 module.exports = {
 
-    getListUser: async function(listFriends, limit, page) {
+    getListUser: async function(listFriends, listReusetet, listResponder, limit, page) {
         return User.find({_id: {$nin: listFriends}, statusProfile: {$ne: false}})
             .limit(limit)
             .skip(limit * page)
@@ -13,10 +13,12 @@ module.exports = {
             .then((users) => {
                 var usersList = [];
                 users.forEach(element => {
-                    usersList.push(UserFunction.userDTO(element));
+                    var status = listReusetet.find(x => x.responder._id.toString() == element._id.toString());
+                    var isBoolean = status !== undefined;
+                    usersList.push(UserFunction.userAllDTO(element, isBoolean));
                 });
                 
-                return {status: 200, usersList: usersList};
+                return {status: 200, message: usersList};
             })
             .catch((err) => {
                 return {status: 404, message: 'server'};

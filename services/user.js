@@ -78,18 +78,27 @@ router
         var limit = 20;
         var page = Math.max(0, pageReq)
 
-        var listUser = await userImpl.getListUser(listFriends.listFriends, limit, page);
-        return res.status(listUser.status).send({users: listUser.usersList});
+        var allRequestet = await relationshipImpl.requested(user);
+        // var allResposer = await relationshipImpl.responder(user);
+        var listUser = await userImpl.getListUser(
+            listFriends.listFriends,
+            allRequestet.message,
+            null,
+            limit,
+            page);
+
+        return res.status(listUser.status).send({users: listUser.message});
     })
     /**
      * Metoda za pretrazivanje svih korisnika na serveru
      */
     .get('/search/:text', async function(req, res) {
        var text = req.params.text;
+       var me = res.locals.currUser;
        var limit = 20;
        var page = 0;
 
-       var listUser = await userImpl.searchUser(text, limit, page);
+       var listUser = await userImpl.searchUser(text, limit, page, me);
        return res.status(listUser.status).send({users: listUser.usersList});
     })
     .post('/friends', async function(req, res) {

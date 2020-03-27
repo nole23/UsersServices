@@ -22,6 +22,24 @@ module.exports = {
            }
         }
     },
+    userAllDTO: function(user, isBoolean) {
+        return {
+            _id: user._id,
+           firstName: user.firstName,
+           lastName: user.lastName,
+           username: user.username,
+           email: user.email,
+           otherInformation: {
+            sex: user.otherInformation.sex,
+            publicMedia: user.otherInformation.publicMedia,
+            dateOfBirth: user.otherInformation.dateOfBirth,
+            adress: user.otherInformation.adress,
+            jobs: user.otherInformation.jobs,
+            about: user.otherInformation.myText
+           },
+           request: isBoolean
+        }
+    },
     findUserByUsername: async function(username) {
         return User.findOne({username: username}, function(err, user) {
             return user;

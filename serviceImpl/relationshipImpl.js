@@ -55,6 +55,29 @@ module.exports = {
       .catch(err => {
         return false
       })
+  },
+  requested: async function(me) {
+    return Relationship.find({requester: me._id})
+      .populate('responder')
+      .exec()
+      .then(data => {
+          return {status: 200, message: data}
+      })
+      .catch(err => {
+        return {status: 404, message: 'ERROR_SERVER'}
+      })
+  },
+  responder: async function(me) {
+    // {'$or': [{email: req.body.user}, {_id: req.body.user}]}
+    return Relationship.find({responder: me._id})
+      .populate('requester')
+      .exec()
+      .then(data => {
+        return {status: 200, message: data}
+      })
+      .catch(err => {
+        return {status: 404, message: 'ERROR_SERVER'}
+      })
   }
 }
 
