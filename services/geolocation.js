@@ -11,14 +11,13 @@ router
      * Funkcija koja ne radi nista, vrsi se samo provera da li je 
      * ziv ruter
      */
-    .get('/', function(req, res) {
+    .get('/:city', function(req, res) {
+        var city = req.params.city;
         openGeocoder()
-            .geocode('novi sad')
-            .end((err, res) => {
-                console.log(res[0])
-                console.log(res[0].geojson)
+            .geocode(city.toString())
+            .end((err, result) => {
+                return res.status(200).send({message: result});
             })
-        return res.status(200).send('Router is life')
     })
     .post('/', function(req, res) {
         var geolocation = req.body;
