@@ -84,6 +84,10 @@ const UserInformationSchema = new Schema({
     },
     verificationToken: {
         type: String
+    },
+    options: {
+        type: Schema.Types.ObjectId,
+        ref: 'UserConfiguration'
     }
 });
 

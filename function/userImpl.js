@@ -52,14 +52,13 @@ module.exports = {
             secure: true,
             auth: {
                 type: 'OAuth2',
-                user: 'twoway.owner@gmail.com',
+                user: 'twoway.own@gmail.com',
                 pass: 'aplikacija1'
             }
         }));
         var link =  'https://twoway1.herokuapp.com/verify/' + user.username + '/' + verificationToken;
-        console.log("email: " +user.email)
         var mailOptions = {
-            from:'twoway.owner@gmail.com',
+            from:'twoway.own@gmail.com',
             to: user.email,
             subject: "Email Verification",
             html: "<body><h1>Two Way</h1><br><p>Please click this <a href="+link+">link</a></p></body>"
@@ -109,6 +108,9 @@ module.exports = {
     getRandomInt: function(max) {
         return Math.floor(Math.random() * Math.floor(max));
     },
+    getToken: function() {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    },
     geolocation: function(address, _id) {
         openGeocoder().geocode(address.city.toString()).end((err, corr) => {
             var corrdinate = {
@@ -124,5 +126,15 @@ module.exports = {
                 userInformation.save();
             })
         })
+    },
+    save: async function(user) {
+        var newUser = new User(user);
+        return await newUser.save()
+            .then(res => {
+                return true;
+            })
+            .catch(err => {
+                return false;
+            })
     }
 }

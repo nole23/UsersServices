@@ -1,11 +1,15 @@
 const express = require('express');
 var passwordHash = require('password-hash');
 var jwt = require('jwt-simple');
+accepts = require('accepts');
 const router = express.Router();
 const UserInformation = require('../models/userInformation.js');
 const User = require('../models/user.js');
 const UserFriends = require('../models/UserFriends.js');
+const UserConfiguration = require('../models/UserConfiguration.js');
+const globalConfigurate = require('../configuration/options.js');
 const UserImpl = require('../function/userImpl.js');
+const loginImpl = require('../serviceImpl/loginImpl.js');
 const options = require('../configuration/options.js');
 
 var ioc = require('socket.io-client');
@@ -16,7 +20,9 @@ router
      * Verify router is life
      */
     .get('/', function(req, res) {
-        console.log('upao')
+        console.log(accepts(req).languages());
+        var userConfiguration = UserConfiguration(globalConfigurate['privateOptions'])
+        console.log(userConfiguration)
         socketc.emit('getOnline', {});
         return res.status(200).send('Router is life')
     })
@@ -75,44 +81,17 @@ router
      * return 401 - Password is not corect
      * return 403 - Profil is not verify
      */
-    .post('/sing-in', function(req, res) {
-        var loger = User(req.body['user']);
+    .post('/sing-in', async function(req, res) {
+        var loger = req.body['user'];
 
-        if (loger.email === undefined) {
-            return res.status(400).send({message: 'not send'})
-        } else if (loger.password === undefined) {
-            return res.status(400).send({message: 'not send'})
+        if (loger.email === undefined || loger.email === null) {
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+        } else if (loger.password === undefined || loger.password === null) {
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         } else {
-            User.findOne({email: loger.email})
-            .populate('otherInformation')
-            .populate('friends')
-            .exec()
-            .then((user) =>{
-                if (!user) return res.status(404).send({message: 'credencial'});
-                if (!passwordHash.verify(loger.password, user.password)) {
-                    return res.status(401).send({message: 'credencial'})
-                } else {
-                    if (!user.statusProfile) return res.status(403).send({message: 'profil is not verify'});
-                    var secret = {
-                        sub: new Date().getTime(),
-                        name: user.username,
-                        iat: new Date().setHours(24),
-                        _id: user._id
-                    };
-                    
-                    var token = jwt.encode(secret, 'XWSMeanDevelopment');
-                    socketc.emit('status', user);
-                    
 
-                    var defaultOptions = {
-                        global: options
-                    }
-                    return res.status(200).send({user: UserImpl.userDTO(user), token: token, defaultOptions: defaultOptions});
-                }
-            })
-            .catch((err) =>{
-                if (err !== null) return res.status(404).send({message: 'credencial'})
-            });
+            var data = await loginImpl.login(loger);
+            return res.status(data.status).send({message: data.message})
         }
     })
     /**
@@ -122,56 +101,38 @@ router
      * return 403 - Email is not corect or when is save in DB
      */
     .post('/sing-up', async function(req, res) {
-        var user = User(req.body['user']);
-        var userInformation = UserInformation(req.body['userInformation']);
-        var userFriends = UserFriends();
+        var user = req.body['user'];
+        var userInformation = req.body['userInformation'];
+        var userLang = req.body['userLang'];
+        var iPInfo = req.body['iPInfo'];
 
         if (user.firstName === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
         if (user.lastName === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
         if (user.email === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
         if (user.password === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
         if (userInformation.sex === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
         if (userInformation.dateOfBirth === '') {
-            return res.status(400).send({message: 'not send'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
         }
-        
-        userInformation.verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        userInformation.publicMedia = {
-            profileImage: "./assets/picture/avatar1.png",
-            coverPhoto: "./assets/picture/cover.png"
-        };
-        user.otherInformation = userInformation._id;
-        var username = user['email'].split('@');
-        user['username'] = username[0];
-        user['password'] = passwordHash.generate(user['password']);
-        
-        const status = await UserImpl.findUserByUsername(username[0]);
-        if (status !== undefined && status !== null) {
-            user['username'] = username[0] + status['_id'];
+        if (userLang === undefined || userLang === null) {
+            userLang = (accepts(req).languages()).split[','][0]
+        }
+        if (iPInfo == undefined) {
+            iPInfo = null;
         }
 
-
-        user.friends = userFriends;
-
-        user.save((err) => {
-            if (err !== null && err.name == 'MongoError') return res.status(403).send({message: 'email'})
-            UserImpl.sendMaile(user, userInformation.verificationToken);
-            userInformation.save((errr) => {
-                userFriends.save((errrr) => {
-                    return res.status(200).send(errrr)
-                })
-            });
-        });        
+        const data = await loginImpl.create(user, userInformation, userLang, iPInfo);
+        return res.status(200).send({message: data.message});
     })
     /**
      * Method for send restart password token
