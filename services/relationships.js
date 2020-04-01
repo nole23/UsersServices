@@ -4,6 +4,7 @@ var router = express.Router();
 var relationshipsImpl = require('../serviceImpl/relationshipImpl.js');
 var userImpl = require('../serviceImpl/userImpl.js');
 var userFriendsImpl = require('../serviceImpl/userFriendsImpl.js');
+var chatImpl = require('../serviceImpl/chatImpl.js');
 
 var Auth = require('../meddlewares/auth.js');
 var Relationship = require('../models/relationships.js');
@@ -54,6 +55,8 @@ router
         
         relationshipsImpl.deleteByReqRes(me._id, _id);
         relationshipsImpl.deleteByReqRes(_id, me._id);
+
+        chatImpl.creatChaters(me, [_id])
         return res.status(200).send({message: 'succifully'});
     })
     .delete('/:id', async function(req, res) {
