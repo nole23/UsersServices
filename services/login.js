@@ -1,16 +1,13 @@
 const express = require('express');
 var passwordHash = require('password-hash');
-var jwt = require('jwt-simple');
 accepts = require('accepts');
 const router = express.Router();
 const UserInformation = require('../models/userInformation.js');
 const User = require('../models/user.js');
-const UserFriends = require('../models/UserFriends.js');
 const UserConfiguration = require('../models/UserConfiguration.js');
 const globalConfigurate = require('../configuration/options.js');
 const UserImpl = require('../function/userImpl.js');
 const loginImpl = require('../serviceImpl/loginImpl.js');
-const options = require('../configuration/options.js');
 
 var ioc = require('socket.io-client');
 var socketc = ioc.connect('https://twoway-statusservice.herokuapp.com', {reconnect: true});

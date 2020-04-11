@@ -15,6 +15,12 @@ router
         var data = await chatImpl.getAllChatBayId(me, 20, 0);
         return res.status(data.status).send({message: data.message})
     })
+    .get('/:id', async function(req, res) {
+        var id = req.params.id;
+
+        var data = await chatImpl.getChatById(id);
+        return res.status(data.status).send({message: data.message})
+    })
     /**
      * Kreiramo novu listu za chatovanje,
      * Ovo se desava prilikom prihvatanja zahtjeva za prijateljstvo automatski
