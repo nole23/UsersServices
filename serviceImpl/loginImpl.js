@@ -42,9 +42,9 @@ module.exports = {
                 }
 
                 var token = jwt.encode(secret, 'XWSMeanDevelopment');
-                
+
                 var data = {
-                    user: userImpl.userDTO(user),
+                    user: userImpl.userAllDTO(user, false),
                     token: token,
                     defaultOptions: userConfigurationImpl.optionsDTO(user.otherInformation.options)
                 }

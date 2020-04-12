@@ -37,7 +37,8 @@ module.exports = {
             jobs: user.otherInformation.jobs,
             about: user.otherInformation.myText
            },
-           request: isBoolean
+           request: isBoolean,
+           listFriends: user.friends.listFriends
         }
     },
     findUserByUsername: async function(username) {
