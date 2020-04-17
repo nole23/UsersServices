@@ -16,7 +16,7 @@ router
         openGeocoder()
             .geocode(city.toString())
             .end((err, result) => {
-                return res.status(200).send({message: result});
+                return res.status(200).send({message: result, socket: 'SOCKET_NULL_POINT'});
             })
     })
     .post('/', function(req, res) {

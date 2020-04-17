@@ -33,18 +33,21 @@ router
     .get('/send-new-token', function(req, res) {
         var parameters = req.body;
         User.findOne({email: parameters.email}, function(err, user) {
-            if (err !== null || !user) return res.status(404).send({message: 'email not found'});
-            if (user.statusProfile) return res.status(403).send({message: 'profile is verificate'});
+            if (err !== null || !user) return res.status(404).send({message: 'email not found', socket: 'SOCKET_NULL_POINT'});
+            if (user.statusProfile) return res.status(403).send({message: 'profile is verificate', socket: 'SOCKET_NULL_POINT'});
             UserInformation.findOne({_id: user.userInformation}, function(error, userInformation) {
-                if (error !== null || !userInformation) return res.status(404).send({message: 'user information not found'});
+                if (error !== null || !userInformation) return res.status(404).send({message: 'user information not found', socket: 'SOCKET_NULL_POINT'});
 
                 userInformation.verificationToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
                 userInformation.save((errsave) =>{
-                    if (errsave !== null) return res.status(403).send({message: 'not save'})
+                    if (errsave !== null) return res.status(403).send({message: 'not save', socket: 'SOCKET_NULL_POINT'})
                     UserImpl.sendMaile(user, userInformation.verificationToken);
 
-                    return res.status(200).send({message: 'send verification token'});
+                    return res.status(200).send({
+                        message: 'send verification token',
+                        socket: 'SOCKET_NULL_POINT'
+                    });
                 })
             })
 
@@ -61,14 +64,19 @@ router
         var code = req.params.code;
 
         User.findOne({email: email}, function(err, user) {
-            if (err !== null || !user) return res.status(404).send({message: 'not found user'});
+            if (err !== null || !user) return res.status(404).send({message: 'not found user', socket: 'SOCKET_NULL_POINT'});
             
             if (parseInt(user.tokenForRestartPassword) === parseInt(code)) {
-                return res.status(200).send({message: 'code is verify'})
+                return res.status(200).send({message: 'code is verify', socket: 'SOCKET_NULL_POINT'})
             } else {
-                return res.status(403).send({message: 'not code'});
+                return res.status(403).send({message: 'not code', socket: 'SOCKET_NULL_POINT'});
             }
         })
+    })
+    .post('/t/t/t/t', async function(req, res) {
+        var token = req.body.token || req.query.token || req.headers['authorization'];
+        console.log(token)
+        return res.status(200).send({message: 'novica caru', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Login whit username or email and password
@@ -79,16 +87,17 @@ router
      * return 403 - Profil is not verify
      */
     .post('/sing-in', async function(req, res) {
+        console.log(req.body)
         var loger = req.body['user'];
 
         if (loger.email === undefined || loger.email === null) {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         } else if (loger.password === undefined || loger.password === null) {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         } else {
 
             var data = await loginImpl.login(loger);
-            return res.status(data.status).send({message: data.message})
+            return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
         }
     })
     /**
@@ -104,22 +113,22 @@ router
         var iPInfo = req.body['iPInfo'];
 
         if (user.firstName === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (user.lastName === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (user.email === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (user.password === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (userInformation.sex === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (userInformation.dateOfBirth === '') {
-            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION'})
+            return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         }
         if (userLang === undefined || userLang === null) {
             userLang = (accepts(req).languages()).split[','][0]
@@ -129,7 +138,7 @@ router
         }
 
         const data = await loginImpl.create(user, userInformation, userLang, iPInfo);
-        return res.status(200).send({message: data.message});
+        return res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Method for send restart password token
@@ -142,7 +151,7 @@ router
         
         var parameters = req.body;
         User.findOne({email: parameters.email}, function(err, user) {
-            if (err !== null || !user) return res.status(404).send({message: 'email not found'});
+            if (err !== null || !user) return res.status(404).send({message: 'email not found', socket: 'SOCKET_NULL_POINT'});
             var random = '';
             
             for (var i=0; i<7; i++) {
@@ -150,9 +159,9 @@ router
             }
             user.tokenForRestartPassword = random;
             user.save((error) => {
-                if (error !== null) return res.status(403).send({message: 'not save'});
+                if (error !== null) return res.status(403).send({message: 'not save', socket: 'SOCKET_NULL_POINT'});
                 UserImpl.sendMaileRestart(user);
-                return res.status(200).send({message: 'send token for restart password'});
+                return res.status(200).send({message: 'send token for restart password', socket: 'SOCKET_NULL_POINT'});
             })
         })
     })
@@ -166,14 +175,14 @@ router
     .put('/retstr-passeord', function(req, res) {
         var params = req.body;
         User.findOne({email: params.email}, function(err, user) {
-            if (err !== null || !user) return res.status(404).send({message: 'not found prodile'});
-            if (user.tokenForRestartPassword === params.code) return res.status(403).send({message: 'code not corect'});
+            if (err !== null || !user) return res.status(404).send({message: 'not found prodile', socket: 'SOCKET_NULL_POINT'});
+            if (user.tokenForRestartPassword === params.code) return res.status(403).send({message: 'code not corect', socket: 'SOCKET_NULL_POINT'});
             
             user.password = passwordHash.generate(params.passwrod);
 
             user.save((error) => {
-                if (error !== null) return res.status(401).send({message: 'not save new password'});
-                return res.status(200).send({message: 'save is success'});
+                if (error !== null) return res.status(401).send({message: 'not save new password', socket: 'SOCKET_NULL_POINT'});
+                return res.status(200).send({message: 'save is success', socket: 'SOCKET_NULL_POINT'});
             })
         })
     })
@@ -186,14 +195,14 @@ router
     .put('/verify/:token', function(req, res) {
         var token = req. params.token;
         UserInformation.findOne({verificationToken: token}, function(err, userInformation) {
-            if (err !== null || !userInformation) return res.status(404).send({message: 'token not found'});
+            if (err !== null || !userInformation) return res.status(404).send({message: 'token not found', socket: 'SOCKET_NULL_POINT'});
             User.findOne({otherInformation: userInformation._id}, function(error, user) {
-                if (error !== null || !user) return res.status(404).send({message: 'profile not found'});
+                if (error !== null || !user) return res.status(404).send({message: 'profile not found', socket: 'SOCKET_NULL_POINT'});
                 user.statusProfile = true;
 
                 user.save((errsave) => {
-                    if (errsave !== null) return res.status(403).send({message: 'profil not verificate'});
-                    return res.status(200).send({message: 'profil is verificate'});
+                    if (errsave !== null) return res.status(403).send({message: 'profil not verificate', socket: 'SOCKET_NULL_POINT'});
+                    return res.status(200).send({message: 'profil is verificate', socket: 'SOCKET_NULL_POINT'});
                 })
             })
         })
@@ -207,10 +216,10 @@ router
     .delete('/:id', function(req, res) {
         var _id = req.params.id;
         User.findOne({_id: _id}, function(err, user) {
-            if (err !== null || !user) return res.status(404).send({message: 'not found'});
+            if (err !== null || !user) return res.status(404).send({message: 'not found', socket: 'SOCKET_NULL_POINT'});
             user.statusProfile = false;
             user.save((error) => {
-                if (error !== null) return res.status(403).send({message: 'profil wasnt delete'})
+                if (error !== null) return res.status(403).send({message: 'profil wasnt delete', socket: 'SOCKET_NULL_POINT'})
                 return res.status(200).send({message: 'profil was delete'})
             });
         })

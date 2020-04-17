@@ -12,7 +12,7 @@ router
     .get('/', async function(req, res) {
         var me = res.locals;
         var data = await notificationImpl.getAllNotification(me, 20, 0);
-        res.status(data.status).send(data.message);
+        res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
 
 

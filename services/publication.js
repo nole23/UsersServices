@@ -29,7 +29,7 @@ router
 
         var listPublication = await publicationImpl.getAllPublicationById(user_id, me._id, 20, 0);
         
-        return res.status(listPublication.status).send({publication: listPublication.publication});
+        return res.status(listPublication.status).send({publication: listPublication.publication, socket: 'SOCKET_NULL_POINT'});
     })
     .get('/image/:id', async function(req, res) {
         var id = req.params.id;
@@ -37,7 +37,7 @@ router
 
         var publicOfPicture = await publicationImpl.getPublicByPicture(id, me);
 
-        return res.status(publicOfPicture.status).send({publication: publicOfPicture.message})
+        return res.status(publicOfPicture.status).send({publication: publicOfPicture.message, socket: 'SOCKET_NULL_POINT'})
     })
     .post('/', async function(req, res) {
         var item = req.body['item'];
@@ -45,7 +45,7 @@ router
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
-        return res.status(isSave.status).send({message: isSave.like});
+        return res.status(isSave.status).send({message: isSave.like, socket: 'SOCKET_NULL_POINT'});
     })
     .post('/location', async function(req, res) {
         var body = req.body;
@@ -93,7 +93,7 @@ router
             location: newaddress,
             friends: body.friends
         }
-        return res.status(200).send(odg)
+        return res.status(200).send({message: odg, socket: 'SOCKET_NULL_POINT'})
     })
     .post('/text', async function(req, res) {
         var body = req.body;
@@ -113,7 +113,7 @@ router
             null
         );
 
-        return res.status(200).send(data);
+        return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'});
     })
     .put('/', async function(req, res) {
         var user_id = req.body['user'];
@@ -122,7 +122,7 @@ router
 
         var isSave = await publicationImpl.like(user_id, publication_id, me);
         // Ovde treba napraviti metodu koja javlja sta se uradilo i kreira notifikaciju
-        return res.status(isSave.status).send({publication: isSave.like});
+        return res.status(isSave.status).send({publication: isSave.like, socket: 'SOCKET_NULL_POINT'});
     })
     .put('/remove', async function(req, res) {
         var user_id = req.body['user'];
@@ -130,7 +130,7 @@ router
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.disLike(user_id, publication_id, me);
-        return res.status(isSave.status).send({publication: isSave.like});
+        return res.status(isSave.status).send({publication: isSave.like, socket: 'SOCKET_NULL_POINT'});
     })
     .put('/status/:type', function(req, res) {
         var me = res.locals.currUser;
@@ -151,9 +151,9 @@ router
             }
 
             var isSave = publicationImpl.showHidePorfile(item);
-            return res.status(200).send({message: 'success'})
+            return res.status(200).send({message: 'success', socket: 'SOCKET_NULL_POINT'})
         } else {
-            return res.status(200).send({message: 'error'})
+            return res.status(200).send({message: 'error', socket: 'SOCKET_NULL_POINT'})
         }
     })
     .put('/public-again/:id', async function(req, res) {
@@ -176,9 +176,9 @@ router
                 null
             )
 
-            return res.status(data.status).send({message: save})
+            return res.status(data.status).send({message: save, socket: 'SOCKET_NULL_POINT'})
         } else {
-            return res.status(data.status).send({message: data.message})
+            return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
         }
         
     })
@@ -187,7 +187,7 @@ router
         var me = res.locals.currUser;
 
         var data = await publicationImpl.delete(_id, me);
-        return res.status(data.status).send({message: data.message})
+        return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
     })
 
 module.exports = router;

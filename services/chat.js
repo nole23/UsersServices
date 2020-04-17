@@ -13,13 +13,13 @@ router
         var me = res.locals.currUser;
 
         var data = await chatImpl.getAllChatBayId(me, 20, 0);
-        return res.status(data.status).send({message: data.message})
+        return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
     })
     .get('/:id', async function(req, res) {
         var id = req.params.id;
 
         var data = await chatImpl.getChatById(id);
-        return res.status(data.status).send({message: data.message})
+        return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Kreiramo novu listu za chatovanje,
@@ -31,7 +31,7 @@ router
         var listUser = req.body;
 
         var data = await chatImpl.creatChaters(me, listUser);
-        return res.status(data.status).send({message: data.message});
+        return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Dodati novog clana u razgovor,

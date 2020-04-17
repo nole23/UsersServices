@@ -27,10 +27,10 @@ router
         var me = res.locals.currUser;
 
         var user = await userImpl.getUserById(_id, me._id);
-        if (user.status != 200) return res.status(user.status).send({user: null, relationship: null});
+        if (user.status != 200) return res.status(user.status).send({user: null, relationship: null, socket: 'SOCKET_NULL_POINT'});
         var isRequester = await relationshipImpl.getStatusRelationship(me._id, _id);
         var isResponder = await relationshipImpl.getStatusRelationship(_id, me._id);
-        return res.status(200).send({user: user.user, isRequester: isRequester, isResponder: isResponder, isFriends: user.friends});
+        return res.status(200).send({user: user.user, isRequester: isRequester, isResponder: isResponder, isFriends: user.friends, socket: 'SOCKET_NULL_POINT'});
     })
     .get('/friends/:id/:page', async function(req, res) {
         var _id = req.params.id;
@@ -40,7 +40,7 @@ router
         var page = Math.max(0, page)
         
         var listFrineds = await userFriendImpl.getListFriends(me.friends, limit, page);
-        return res.status(200).send({listFriends: listFrineds});
+        return res.status(200).send({listFriends: listFrineds, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Get all user bat create pagination
@@ -61,7 +61,7 @@ router
                 users.forEach(element => {
                     users.push(UserImpl.userDTO(element));
                 });
-                return res.status(200).send({users: users});
+                return res.status(200).send({users: users, socket: 'SOCKET_NULL_POINT'});
             })
     })
     /**
@@ -87,7 +87,7 @@ router
             limit,
             page);
 
-        return res.status(listUser.status).send({users: listUser.message});
+        return res.status(listUser.status).send({users: listUser.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Metoda za pretrazivanje svih korisnika na serveru
@@ -99,7 +99,7 @@ router
        var page = 0;
 
        var listUser = await userImpl.searchUser(text, limit, page, me);
-       return res.status(listUser.status).send({users: listUser.usersList});
+       return res.status(listUser.status).send({users: listUser.usersList, socket: 'SOCKET_NULL_POINT'});
     })
     .post('/friends', async function(req, res) {
         var listOnlineFriends = req.body['listOnlineFriends'];
@@ -107,7 +107,7 @@ router
         var me = res.locals.currUser;
 
         var listFriends = await userFriendImpl.getModifyListFriends(listOnlineFriends, limit, me);
-        return res.status(200).send({users: listFriends});
+        return res.status(200).send({users: listFriends, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Metoda koja vrsi azuriranje onsovnih informacija kao i imena i
@@ -134,7 +134,7 @@ router
         
         // TODOO - Kada rijesi treba kako sync metoda odgovori klijentu
 
-        return res.status(200).send({message: ''})
+        return res.status(200).send({message: '', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira pasword korisnika, i u tom trenutku ga 
@@ -151,7 +151,7 @@ router
         };
 
         userImpl.editPassword(me._id, objectUser);
-        return res.status(200).send({message: ''})
+        return res.status(200).send({message: '', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira profilnu sliku koriniska, medjutim ne vrsi
@@ -175,7 +175,7 @@ router
             }
         }
         userImpl.editInformation(me.otherInformation, object);
-        return res.status(200).send({message: object})
+        return res.status(200).send({message: object, socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira naslovnu sliku profila
@@ -192,7 +192,7 @@ router
         userFriendImpl.delteFriends(me.friends, _id);
         userFriendImpl.delteFriends(friend.friends, me._id);
         
-        return res.status(200).send({message: 'succesfyll'})
+        return res.status(200).send({message: 'succesfyll', socket: 'SOCKET_NULL_POINT'})
     })
 
 module.exports = router;

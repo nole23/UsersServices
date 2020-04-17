@@ -23,7 +23,7 @@ router
         }
         var ressService = mediaImpl.editImageLocal(data);
         
-        return res.status(200).send({message: ressService.message});
+        return res.status(200).send({message: ressService.message, socket: 'SOCKET_NULL_POINT'});
     })
 
 module.exports = router;
