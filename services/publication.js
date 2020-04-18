@@ -26,9 +26,9 @@ router
     .get('/:id', async function(req, res) {
         var user_id = req.params.id;
         var me = res.locals.currUser;
+        var page = JSON.parse(req.query.page);
 
-        var listPublication = await publicationImpl.getAllPublicationById(user_id, me._id, 20, 0);
-        
+        var listPublication = await publicationImpl.getAllPublicationById(user_id, me._id, 10, page);
         return res.status(listPublication.status).send({publication: listPublication.publication, socket: 'SOCKET_NULL_POINT'});
     })
     .get('/image/:id', async function(req, res) {
