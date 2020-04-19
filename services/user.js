@@ -27,9 +27,10 @@ router
         var me = res.locals.currUser;
 
         var user = await userImpl.getUserById(_id, me._id);
+
         if (user.status != 200) return res.status(user.status).send({user: null, relationship: null, socket: 'SOCKET_NULL_POINT'});
-        var isRequester = await relationshipImpl.getStatusRelationship(me._id, _id);
-        var isResponder = await relationshipImpl.getStatusRelationship(_id, me._id);
+        var isRequester = await relationshipImpl.getStatusRelationship(me._id, user.user._id);
+        var isResponder = await relationshipImpl.getStatusRelationship(user.user._id, me._id);
         return res.status(200).send({user: user.user, isRequester: isRequester, isResponder: isResponder, isFriends: user.friends, socket: 'SOCKET_NULL_POINT'});
     })
     .get('/friends/:id/:page', async function(req, res) {

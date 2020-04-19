@@ -48,7 +48,7 @@ module.exports = {
             })
     },
     getUserById: async function(_id, me_id) {
-        return User.findOne({_id: _id})
+        return User.findOne({username: _id})
             .populate('otherInformation')
             .populate('friends')
             .populate({ 
