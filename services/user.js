@@ -73,34 +73,38 @@ router
     .get('/all-other/:page', async function(req, res) {
         var pageReq = req.params.page;
         var user = res.locals.currUser;
-
-        var listFriends = await relationshipImpl.listAllFriends(user);
-        listFriends.listFriends.push(user._id);
+        var listFriends = user.friends.listFriends;
+        listFriends.push(user._id);
         var limit = 20;
         var page = Math.max(0, pageReq)
 
-        var allRequestet = await relationshipImpl.requested(user);
-        // var allResposer = await relationshipImpl.responder(user);
+        // Ja sam nekom poslao zahtjev
+        var requestedOrResponder = await relationshipImpl.requestedOrResponder(user);
+        var allRequestetOrResponder = requestedOrResponder.status == 404 ? [] : requestedOrResponder.message;
+
         var listUser = await userImpl.getListUser(
-            listFriends.listFriends,
-            allRequestet.message,
-            null,
+            listFriends,
+            allRequestetOrResponder,
             limit,
             page);
 
-        return res.status(listUser.status).send({users: listUser.message, socket: 'SOCKET_NULL_POINT'});
+        return res.status(200).send({message: listUser.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Metoda za pretrazivanje svih korisnika na serveru
      */
     .get('/search/:text', async function(req, res) {
-       var text = req.params.text;
-       var me = res.locals.currUser;
-       var limit = 20;
-       var page = 0;
+        var text = req.params.text;
+        var me = res.locals.currUser;
+        var limit = 20;
+        var page = 0;
+        var listFrineds = me.friends.listFriends;
 
-       var listUser = await userImpl.searchUser(text, limit, page, me);
-       return res.status(listUser.status).send({users: listUser.usersList, socket: 'SOCKET_NULL_POINT'});
+        var requestedOrResponder = await relationshipImpl.requestedOrResponder(me);
+        var allRequestetOrResponder = requestedOrResponder.status == 404 ? [] : requestedOrResponder.message;
+        
+        var listUser = await userImpl.searchUser(text, limit, page, me, allRequestetOrResponder, listFrineds);
+        return res.status(listUser.status).send({users: listUser.usersList, socket: 'SOCKET_NULL_POINT'});
     })
     .post('/friends', async function(req, res) {
         var listOnlineFriends = req.body['listOnlineFriends'];

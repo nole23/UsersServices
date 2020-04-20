@@ -12,6 +12,7 @@ exports.isLogged = function(req,res,next){
 		var currentId = decoded._id;
 		User.findOne({_id:currentId})
 			.populate('otherInformation')
+			.populate('friends')
 			.exec()
 			.then((user) => {
 				res.locals = decoded;

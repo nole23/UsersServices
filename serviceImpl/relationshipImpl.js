@@ -56,9 +56,8 @@ module.exports = {
         return false
       })
   },
-  requested: async function(me) {
-    return Relationship.find({requester: me._id})
-      .populate('responder')
+  requestedOrResponder: async function(me) {
+    return Relationship.find({$or: [{ 'requester': me._id },{ 'responder': me._id }]})
       .exec()
       .then(data => {
           return {status: 200, message: data}
@@ -68,9 +67,7 @@ module.exports = {
       })
   },
   responder: async function(me) {
-    // {'$or': [{email: req.body.user}, {_id: req.body.user}]}
     return Relationship.find({responder: me._id})
-      .populate('requester')
       .exec()
       .then(data => {
         return {status: 200, message: data}

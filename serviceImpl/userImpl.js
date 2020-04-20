@@ -4,7 +4,7 @@ var UserFunction = require('../function/userImpl.js');
 
 module.exports = {
 
-    getListUser: async function(listFriends, listReusetet, listResponder, limit, page) {
+    getListUser: async function(listFriends, allRequestetOrResponder, limit, page) {
         return User.find({_id: {$nin: listFriends}, statusProfile: {$ne: false}})
             .limit(limit)
             .skip(limit * page)
@@ -13,18 +13,33 @@ module.exports = {
             .then((users) => {
                 var usersList = [];
                 users.forEach(element => {
-                    var status = listReusetet.find(x => x.responder._id.toString() == element._id.toString());
-                    var isBoolean = status !== undefined;
-                    usersList.push(UserFunction.userAllDTO(element, isBoolean));
+                    var requested = allRequestetOrResponder.find(x => x.responder._id.toString() == element._id.toString());
+                    var responder = allRequestetOrResponder.find(x => x.requester._id.toString() == element._id.toString());
+
+                    var isRelationship = false;
+                    var isResOrReq = false;
+                    if (requested != undefined || responder != undefined) {
+                        isRelationship = true;
+                    }
+                    if (requested != undefined && responder == undefined) {
+                        isResOrReq = true;
+                    }
+                    usersList.push({
+                        user: UserFunction.userDTO(element),
+                        isRelationship: isRelationship,
+                        isResOrReq: isResOrReq,
+                        isFriends: false,
+                        isMe: false
+                    });
                 });
                 
                 return {status: 200, message: usersList};
             })
             .catch((err) => {
-                return {status: 404, message: 'server'};
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'};
             })
     },
-    searchUser: async function(text, limit, page) {
+    searchUser: async function(text, limit, page, me, allRequestetOrResponder, listFriends) {
         return User.find({statusProfile: {$ne: false}})
             .or([
                 { username: new RegExp(text, 'i')},
@@ -38,13 +53,32 @@ module.exports = {
             .then((users) => {
                 var usersList = [];
                 users.forEach(element => {
-                    usersList.push(UserFunction.userDTO(element));
+                    var requested = allRequestetOrResponder.find(x => x.responder._id.toString() == element._id.toString());
+                    var responder = allRequestetOrResponder.find(x => x.requester._id.toString() == element._id.toString());
+                    var isFriends = listFriends.find(x =>  x == element._id.toString());
+
+                    var isRelationship = false;
+                    var isResOrReq = false;
+                    if (requested != undefined || responder != undefined) {
+                        isRelationship = true;
+                    }
+                    if (requested != undefined && responder == undefined) {
+                        isResOrReq = true;
+                    }
+                    
+                    usersList.push({
+                        user: UserFunction.userDTO(element),
+                        isRelationship: isRelationship,
+                        isResOrReq: isResOrReq,
+                        isFriends: isFriends == undefined ? false : true,
+                        isMe: me._id.toString() == element._id.toString()
+                    });
                 });
                 
                 return {status: 200, usersList: usersList};
             })
             .catch((err) => {
-                return {status: 404, message: 'server'};
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'};
             })
     },
     getUserById: async function(_id, me_id) {
@@ -59,7 +93,7 @@ module.exports = {
              })
             .exec()
             .then((user) => {
-                if (!user) return {status: 404, message: 'user not found'};
+                if (!user) return {status: 200, message: 'ERROR_NOT_FIND_ITEM'};
                 let status = false;
                 user.friends.listFriends.forEach(element => {
                     
