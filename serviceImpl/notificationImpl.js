@@ -18,13 +18,13 @@ module.exports = {
             newNotification.save();
         }
     },
-    getAllNotification: async function(me, limit, page) {
-        return Notification.find({owner: me.currUser._id})
+    getAllNotification: async function(me, limit, page) { 
+        return Notification.find({owner: me.currUser._id, type: {$ne: 'visitor'}})
             .sort({dateNotification: -1})
             .limit(limit)
             .skip(limit * page)
             .populate('friend')
-            .populate({ 
+            .populate({
                 path: 'friend',
                 populate: [{
                     path: 'otherInformation'
@@ -50,6 +50,38 @@ module.exports = {
             .catch((err) => {
                 return {status: 404, message: 'server error'}
             })
-
+    },
+    getAllVisitors: async function(me, limit, page) {
+        return Notification.find({owner: me.currUser._id, type: {$nin: ['comment', 'like', 'comment']}})
+        .sort({dateNotification: -1})
+        .limit(limit)
+        .skip(limit * page)
+        .populate('friend')
+        .populate({
+            path: 'friend',
+            populate: [{
+                path: 'otherInformation'
+            }] 
+         })
+        .populate('publication')
+        .exec()
+        .then((notification) => {
+            var ress = []
+            notification.forEach(element => {
+                ress.push({
+                    owner: element['owner'],
+                    friend: userImpl.userDTO(element['friend']),
+                    type: element['type'],
+                    publication: element['publication'],
+                    cordinate: element['cordinate'],
+                    image: element['image'],
+                    dateNotification: element['dateNotification']
+                });
+            });
+            return {status: 200, message: ress};
+        })
+        .catch((err) => {
+            return {status: 404, message: 'server error'}
+        })
     }
 }
