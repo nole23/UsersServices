@@ -1,3 +1,4 @@
+var passwordHash = require('password-hash');
 var User = require('../models/user.js');
 var UserInformation = require('../models/userInformation.js');
 var UserFunction = require('../function/userImpl.js');
@@ -150,7 +151,7 @@ module.exports = {
             .then((user) => {
                 if (!user) return false;
 
-                if (object.password) user.password = object.password;
+                if (object.password) user.password = passwordHash.generate(object.password);
                 if (object.email) user.email = object.email;
 
                 user.save();

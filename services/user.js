@@ -119,27 +119,22 @@ router
      * prezimena, dok se sifra azurira u posebnoj metodi
      */
     .put('/', function (req, res) {
-        console.info('')
         var data = req.body;
         var me = res.locals.currUser;
-        // TODOO - Provjeriti ispravnost podataka
+
         var objectUser = {
-            firstName: !data.firstName ? undefined : data.firstName,
-            lastName: !data.lastName ? undefined : data.lastName,
+            firstName: !data.firstName ? me.firstName : data.firstName,
+            lastName: !data.lastName ? me.lastName : data.lastName,
         };
 
         var objectUserInfo = {
-            dateOfBirth: !data.dateOfBirth ? undefined : data.dateOfBirth,
-            sex: !data.sex ? undefined : data.sex
+            dateOfBirth: !data.dateOfBirth ? me.otherInformation.dateOfCreation : data.dateOfBirth,
+            sex: !data.sex ? me.otherInformation.sex : data.sex
         }
 
-        // TODOO - javiti nekoj metodi da rijesi
         userImpl.editProfile(me._id, objectUser);
         userImpl.editInfo(me.otherInformation, objectUserInfo);
-        
-        // TODOO - Kada rijesi treba kako sync metoda odgovori klijentu
-
-        return res.status(200).send({message: '', socket: 'SOCKET_NULL_POINT'})
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira pasword korisnika, i u tom trenutku ga 
@@ -151,12 +146,12 @@ router
 
         // TODOO - Provjeriti ispravnost podataka
         var objectUser = {
-            email: !data.email ? undefined : data.email,
+            email: !data.email ? me.email : data.email,
             password: !data.password ? undefined : data.password,
         };
 
         userImpl.editPassword(me._id, objectUser);
-        return res.status(200).send({message: '', socket: 'SOCKET_NULL_POINT'})
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira profilnu sliku koriniska, medjutim ne vrsi
@@ -167,20 +162,32 @@ router
         var me = res.locals.currUser;
         
         var object = {
-            myText: !data.about ? undefined : data.about,
-            adress: {
-                country: !data.country ? undefined : data.country,
-                region: !data.region ? undefined : data.region,
-                city: !data.city ? undefined : data.city
-            },
+            myText: !data.about ? me.otherInformation.about : data.about,
+            adress: !data.address ? me.otherInformation.address : data.address,
             jobs: {
-                name: !data.name ? undefined : data.name,
-                places: !data.places ? undefined : data.places,
-                nameCompany: !data.nameCompany ? undefined : data.nameCompany
+                name: !data.name ? me.otherInformation.jobs.name : data.name,
+                places: !data.places ? me.otherInformation.jobs.places : data.places,
+                nameCompany: !data.nameCompany ? me.otherInformation.jobs.nameCompany : data.nameCompany
             }
         }
         userImpl.editInformation(me.otherInformation, object);
-        return res.status(200).send({message: object, socket: 'SOCKET_NULL_POINT'})
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
+    })
+    .put('/configuration', function (req, res) {
+        var data = req.body;
+        var me = res.locals.currUser;
+        
+        // var object = {
+        //     myText: !data.about ? me.otherInformation.about : data.about,
+        //     adress: !data.address ? me.otherInformation.address : data.address,
+        //     jobs: {
+        //         name: !data.name ? me.otherInformation.jobs.name : data.name,
+        //         places: !data.places ? me.otherInformation.jobs.places : data.places,
+        //         nameCompany: !data.nameCompany ? me.otherInformation.jobs.nameCompany : data.nameCompany
+        //     }
+        // }
+        // userImpl.editInformation(me.otherInformation, object);
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Metoda koja azurira naslovnu sliku profila

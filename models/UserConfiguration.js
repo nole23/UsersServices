@@ -22,6 +22,10 @@ const UserConfigurationSchema = new Schema({
             type: String
         }]
     },
+    numberOfData: {
+        type: Number,
+        default: 20
+    },
     profile: {
         birdthDay: {
             type: Boolean
