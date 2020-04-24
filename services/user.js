@@ -37,10 +37,10 @@ router
         var _id = req.params.id;
         var page = req.params.page;
         var me = res.locals.currUser;
-        var limit = 20;
+        var numberOfData = me.otherInformation.options.numberOfData;
         var page = Math.max(0, page)
         
-        var listFrineds = await userFriendImpl.getListFriends(me.friends, limit, page);
+        var listFrineds = await userFriendImpl.getListFriends(me.friends, numberOfData, page);
         return res.status(200).send({listFriends: listFrineds, socket: 'SOCKET_NULL_POINT'});
     })
     /**
@@ -50,7 +50,7 @@ router
     .get('/all/:page', function(req, res) {
         var pageReq = req.params.page;
 
-        var limit = 20;
+        var limit = me.otherInformation.options.numberOfData;
         var page = Math.max(0, pageReq)
         User.find({})
             .limit(limit)
@@ -75,7 +75,7 @@ router
         var user = res.locals.currUser;
         var listFriends = user.friends.listFriends;
         listFriends.push(user._id);
-        var limit = 20;
+        var numberOfData = user.otherInformation.options.numberOfData;
         var page = Math.max(0, pageReq)
 
         // Ja sam nekom poslao zahtjev
@@ -85,7 +85,7 @@ router
         var listUser = await userImpl.getListUser(
             listFriends,
             allRequestetOrResponder,
-            limit,
+            numberOfData,
             page);
 
         return res.status(200).send({message: listUser.message, socket: 'SOCKET_NULL_POINT'});
@@ -96,22 +96,22 @@ router
     .get('/search/:text', async function(req, res) {
         var text = req.params.text;
         var me = res.locals.currUser;
-        var limit = 20;
+        var numberOfData = me.otherInformation.options.numberOfData;
         var page = 0;
         var listFrineds = me.friends.listFriends;
 
         var requestedOrResponder = await relationshipImpl.requestedOrResponder(me);
         var allRequestetOrResponder = requestedOrResponder.status == 404 ? [] : requestedOrResponder.message;
         
-        var listUser = await userImpl.searchUser(text, limit, page, me, allRequestetOrResponder, listFrineds);
+        var listUser = await userImpl.searchUser(text, numberOfData, page, me, allRequestetOrResponder, listFrineds);
         return res.status(listUser.status).send({users: listUser.usersList, socket: 'SOCKET_NULL_POINT'});
     })
     .post('/friends', async function(req, res) {
         var listOnlineFriends = req.body['listOnlineFriends'];
-        var limit = req.body['limit'];
         var me = res.locals.currUser;
+        var numberOfData = me.otherInformation.options.numberOfData;
 
-        var listFriends = await userFriendImpl.getModifyListFriends(listOnlineFriends, limit, me);
+        var listFriends = await userFriendImpl.getModifyListFriends(listOnlineFriends, numberOfData, me);
         return res.status(200).send({users: listFriends, socket: 'SOCKET_NULL_POINT'});
     })
     /**
@@ -177,16 +177,7 @@ router
         var data = req.body;
         var me = res.locals.currUser;
         
-        // var object = {
-        //     myText: !data.about ? me.otherInformation.about : data.about,
-        //     adress: !data.address ? me.otherInformation.address : data.address,
-        //     jobs: {
-        //         name: !data.name ? me.otherInformation.jobs.name : data.name,
-        //         places: !data.places ? me.otherInformation.jobs.places : data.places,
-        //         nameCompany: !data.nameCompany ? me.otherInformation.jobs.nameCompany : data.nameCompany
-        //     }
-        // }
-        // userImpl.editInformation(me.otherInformation, object);
+        userImpl.editConfiguration(me, data);
         return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
     /**

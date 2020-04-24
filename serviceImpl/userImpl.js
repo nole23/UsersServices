@@ -1,6 +1,7 @@
 var passwordHash = require('password-hash');
 var User = require('../models/user.js');
 var UserInformation = require('../models/userInformation.js');
+var UserConfiguration = require('../models/UserConfiguration.js');
 var UserFunction = require('../function/userImpl.js');
 
 module.exports = {
@@ -85,6 +86,12 @@ module.exports = {
     getUserById: async function(_id, me_id) {
         return User.findOne({username: _id})
             .populate('otherInformation')
+            .populate({ 
+                path: 'otherInformation',
+                populate: [{
+                    path: 'options'
+                }] 
+             })
             .populate('friends')
             .populate({ 
                 path: 'friends',
@@ -104,7 +111,7 @@ module.exports = {
 
                 })
 
-                return {status: 200, user: UserFunction.userDTO(user), friends: status};
+                return {status: 200, user: UserFunction.userFriendDTO(user, status), friends: status};
             })
     },
     getIdFrinedsList: async function(_id) {
@@ -175,6 +182,33 @@ module.exports = {
                 UserFunction.geolocation(object.adress, _id);
                 return true;
                 
+            })
+            .catch((err) => {
+                return false;
+            })
+    },
+    editConfiguration: function(me, data) {
+        return UserConfiguration.findById(me.otherInformation.options)
+            .exec()
+            .then((confing) => {
+                confing.localization = !data.languag ? confing.localization : data.languag;
+                confing.profile.newPublication = !data.newPublication ? confing.profile.newPublication : data.newPublication;
+                confing.profile.birdthDay = !data.birdthDay ? confing.profile.birdthDay : data.birdthDay;
+                confing.profile.jab = !data.jab ? confing.profile.jab : data.jab;
+                confing.whoCanSeeProfile = !data.public ? confing.whoCanSeeProfile : data.public;
+                confing.numberOfData = !data.numberOfData ? confing.numberOfData : data.numberOfData;
+                
+                confing.search = !data.search ? confing.search : data.search;
+                confing.thems = !data.search ? confing.thems : data.thems;
+                confing.whoCanSendMessage = !data.whoCanSendMessage ? confing.whoCanSendMessage : data.whoCanSendMessage;
+                confing.online = !data.online ? confing.online : data.online;
+                confing.profile.address = !data.address ? confing.profile.address : data.address;
+                confing.profile.location = !data.location ? confing.profile.location : data.location;
+                confing.profile.publicationComment = !data.publicationComment ? confing.profile.publicationComment : data.publicationComment;
+                confing.profile.newPicturShow = !data.newPicturShow ? confing.profile.newPicturShow : data.newPicturShow;
+
+                confing.save();
+                return true;
             })
             .catch((err) => {
                 return false;

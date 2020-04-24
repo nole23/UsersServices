@@ -17,9 +17,7 @@ router
      * Verify router is life
      */
     .get('/', function(req, res) {
-        console.log(accepts(req).languages());
         var userConfiguration = UserConfiguration(globalConfigurate['privateOptions'])
-        console.log(userConfiguration)
         socketc.emit('getOnline', {});
         return res.status(200).send('Router is life')
     })
@@ -75,7 +73,6 @@ router
     })
     .post('/t/t/t/t', async function(req, res) {
         var token = req.body.token || req.query.token || req.headers['authorization'];
-        console.log(token)
         return res.status(200).send({message: 'novica caru', socket: 'SOCKET_NULL_POINT'})
     })
     /**
@@ -87,7 +84,6 @@ router
      * return 403 - Profil is not verify
      */
     .post('/sing-in', async function(req, res) {
-        console.log(req.body)
         var loger = req.body['user'];
 
         if (loger.email === undefined || loger.email === null) {

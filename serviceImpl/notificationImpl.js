@@ -19,7 +19,7 @@ module.exports = {
         }
     },
     getAllNotification: async function(me, limit, page) { 
-        return Notification.find({owner: me.currUser._id, type: {$ne: 'visitor'}})
+        return Notification.find({owner: me._id, type: {$ne: 'visitor'}})
             .sort({dateNotification: -1})
             .limit(limit)
             .skip(limit * page)
@@ -52,7 +52,7 @@ module.exports = {
             })
     },
     getAllVisitors: async function(me, limit, page) {
-        return Notification.find({owner: me.currUser._id, type: {$nin: ['comment', 'like', 'comment']}})
+        return Notification.find({owner: me._id, type: {$nin: ['comment', 'like', 'comment']}})
         .sort({dateNotification: -1})
         .limit(limit)
         .skip(limit * page)

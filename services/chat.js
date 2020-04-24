@@ -11,8 +11,9 @@ router
      */
     .get('/', async function(req, res) {
         var me = res.locals.currUser;
+        var numberOfData = me.otherInformation.options.numberOfData;
 
-        var data = await chatImpl.getAllChatBayId(me, 20, 0);
+        var data = await chatImpl.getAllChatBayId(me, numberOfData, 0);
         return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
     })
     .get('/:id', async function(req, res) {

@@ -10,15 +10,16 @@ router
      * ziv ruter
      */
     .get('/', async function(req, res) {
-        var me = res.locals;
+        var me = res.locals.currUser;
         var page = JSON.parse(req.query.page);
         var type = JSON.parse(req.query.type);
+        var numberOfData = me.otherInformation.options.numberOfData;
 
         var data = {};
         if (type.toString() == 'visitors') {
-            data = await notificationImpl.getAllVisitors(me, 20, page);
+            data = await notificationImpl.getAllVisitors(me, numberOfData, page);
         } else if (type.toString() == 'publication') {
-            data = await notificationImpl.getAllNotification(me, 20, page);
+            data = await notificationImpl.getAllNotification(me, numberOfData, page);
         }
         
         res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});

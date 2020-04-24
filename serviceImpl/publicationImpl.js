@@ -104,7 +104,6 @@ module.exports = {
         img_id = null
     ) {
         if (!user_id) { 
-            console.log('System not found - dont id user')
             return null;
         }
         

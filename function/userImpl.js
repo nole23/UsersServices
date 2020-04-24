@@ -22,6 +22,44 @@ module.exports = {
            }
         }
     },
+    userFriendDTO: function(user, status) {
+        var isProfle = user.otherInformation.options.profile;
+        let whoCanSeeProfile = user.otherInformation.options.whoCanSeeProfile;
+        var object  = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            email: null,
+            otherInformation: {
+                sex: null,
+                publicMedia: user.otherInformation.publicMedia,
+                dateOfBirth: null,
+                adress: {},
+                jobs: {},
+                about: user.otherInformation.myText
+            }
+        }
+        if (whoCanSeeProfile == 'all') {
+            object.email = user.email;
+            object.otherInformation.sex = user.otherInformation.sex;
+            object.otherInformation.dateOfBirth = isProfle.birdthDay ? user.otherInformation.dateOfBirth : null;
+            object.otherInformation.adress = isProfle.address ? user.otherInformation.adress : {};
+            object.otherInformation.jobs = isProfle.jab ? user.otherInformation.jobs : {};
+        }
+
+        if (whoCanSeeProfile == 'friends') {
+            if (status) {
+                object.email = user.email;
+                object.otherInformation.sex = user.otherInformation.sex;
+                object.otherInformation.dateOfBirth = isProfle.birdthDay ? user.otherInformation.dateOfBirth : null;
+                object.otherInformation.adress = isProfle.address ? user.otherInformation.adress : null;
+                object.otherInformation.jobs = isProfle.job ?  user.otherInformation.jobs : null;
+            }
+        }
+
+        return object;
+    },
     userAllDTO: function(user, isBoolean) {
         return {
             _id: user._id,
