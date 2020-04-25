@@ -24,7 +24,6 @@ module.exports = {
             .sort({dateNotification: -1})
             .limit(limit)
             .skip(limit * page)
-            .populate('friend')
             .populate({
                 path: 'friend',
                 populate: [{
@@ -43,7 +42,8 @@ module.exports = {
                         publication: element['publication'],
                         cordinate: element['cordinate'],
                         image: element['image'],
-                        dateNotification: element['dateNotification']
+                        dateNotification: element['dateNotification'],
+                        isStatus: element.status
                     });
                 });
                 return {status: 200, message: ress};
@@ -76,7 +76,8 @@ module.exports = {
                     publication: element['publication'],
                     cordinate: element['cordinate'],
                     image: element['image'],
-                    dateNotification: element['dateNotification']
+                    dateNotification: element['dateNotification'],
+                    isStatus: element.status
                 });
             });
             return {status: 200, message: ress};
@@ -93,10 +94,29 @@ module.exports = {
                 requestList.push({
                     dateNotification: element.requesteDate,
                     friend: userImpl.userFriendDTO(element['requester'], false),
-                    type: 'relationship'
+                    type: 'relationship',
+                    isStatus: false
                 })
             })
         };
         return {status: 200, message: requestList}
+    },
+    setShowPublic: function(listType, me) {
+        return Notification.find({owner: me._id, type: {$nin: listType}})
+            .exec()
+            .then(notifications => {
+                notifications.forEach(element =>{
+                    if (!element.status) {
+                        element.status = true;
+
+                        element.save();
+                    }
+                });
+
+                return {status: 200, message: 'SUCCESS_SAVE'}
+            })
+            .catch(err => {
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND'}
+            })
     }
 }

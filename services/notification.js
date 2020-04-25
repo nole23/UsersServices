@@ -26,6 +26,20 @@ router
         
         res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
+    .put('/:type', function(req, res) {
+        var me = res.locals.currUser;
+        var type = req.body.type;
+        var listNot = [];
+
+        if (type.toString() == 'visitors') {
+            listNot = ['comment', 'like', 'comment'];
+        } else if (type.toString() == 'publication') {
+            listNot = ['visitor']
+        }
+
+        notificationImpl.setShowPublic(listNot, me);
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
+    })
 
 
 module.exports = router;

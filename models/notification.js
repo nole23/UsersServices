@@ -66,6 +66,10 @@ const NotificationSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    status: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 module.exports = mongoose.model('Notification', NotificationSchema);
