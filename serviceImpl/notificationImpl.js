@@ -1,5 +1,6 @@
 var Notification = require('../models/notification.js');
 var userImpl = require('../function/userImpl.js');
+var relationshipImpl = require('../serviceImpl/relationshipImpl.js');
 
 module.exports = {
     // Prijatelj sam ja, a vlasnik je moj prijatelj
@@ -83,5 +84,19 @@ module.exports = {
         .catch((err) => {
             return {status: 404, message: 'server error'}
         })
+    },
+    getAllRelationshio: async function(me, limit, page) {
+        var item = await relationshipImpl.requester(me._id, limit, page);
+        var requestList = []
+        if (item.length != 0) {
+            item.forEach(element => {
+                requestList.push({
+                    dateNotification: element.requesteDate,
+                    friend: userImpl.userFriendDTO(element['requester'], false),
+                    type: 'relationship'
+                })
+            })
+        };
+        return {status: 200, message: requestList}
     }
 }

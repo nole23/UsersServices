@@ -80,9 +80,30 @@ module.exports = {
         }
     },
     findUserByUsername: async function(username) {
-        return User.findOne({username: username}, function(err, user) {
-            return user;
-        })
+        return User.findOne({username: username})
+            .exec()
+            .then(user => {
+                return user;
+            })
+            .catch(err => {
+                return undefined;
+            })
+    },
+    findUserById: async function(id) {
+        return User.findById(id)
+            .populate({
+                path: 'otherInformation',
+                populate: [{
+                    path: 'options'
+                }]
+            })
+            .exec()
+            .then(user => {
+                return user;
+            })
+            .catch(err => {
+                return undefined;
+            })
     },
     sendMaile: function(user, verificationToken) {
         var transporter = nodemailer.createTransport(smtpTransport({

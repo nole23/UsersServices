@@ -75,6 +75,27 @@ module.exports = {
       .catch(err => {
         return {status: 404, message: 'ERROR_SERVER'}
       })
+  },
+  requester: async function(id, limit, page) {
+    return Relationship.find({responder: id})
+      .limit(limit)
+      .skip(limit * page)
+      .populate({
+        path: 'requester',
+        populate: [{
+          path: 'otherInformation',
+          populate: [{
+            path: 'options'
+          }]
+        }]
+      })
+      .exec()
+      .then(requester => {
+        return requester;
+      })
+      .catch(err => {
+        return [];
+      })
   }
 }
 

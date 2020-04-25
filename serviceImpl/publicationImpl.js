@@ -7,8 +7,8 @@ var socketc = ioc.connect('https://twoway1.herokuapp.com/', {reconnect: true});
 
 module.exports = {
 
-    getAllPublicationById: async function(id, me_id, limit, page, me) {
-        return Publication.find({user_id: id})
+    getAllPublicationById: async function(user, me_id, limit, page, isFriend) {
+        return Publication.find({user_id: user._id, 'showPublication.removeStatus': {$ne: true}})
             .sort({datePublish: -1})
             .limit(limit)
             .skip(limit * page)
@@ -19,35 +19,49 @@ module.exports = {
                  path: 'otherInformation'
                 }] 
              })
-            .populate('user_id')
-            .populate({ 
-                path: 'user_id',
-                populate: [{
-                 path: 'otherInformation'
-                }] 
-             }).populate({ 
-                path: 'user_id',
-                populate: [{
-                 path: 'otherInformation'
-                }] 
-             })
             .exec()
             .then((publications) => {
                 if (publications !== null) {
                     var listPublication = [];
                     publications.forEach(item => {
-                        if (id.toString() == me_id.toString()) {
-                            listPublication.push(this.publicationDTO(item))
-                        } else {
-                            if (!item.showPublication.removeStatus) {
-                                listPublication.push(this.publicationDTO(item))
+                        if (!item.showPublication.removeStatus) {
+                            item.user_id = user;
+                            if (!item.showPublication.justFriends) {
+                                listPublication.push(this.publicationDTO(item, true));
+                            } else {
+                                if (isFriend != -1) {
+                                    listPublication.push(this.publicationDTO(item, true));
+                                }
                             }
                         }
                     })
-
                     return {status: 200, publication: listPublication}
                 }
             })
+    },
+    getAllPublication: async function(me, limit, page) {
+        return Publication.find({user_id: me._id})
+        .sort({datePublish: -1})
+        .limit(limit)
+        .skip(limit * page)
+        .populate('comments.user')
+        .populate({ 
+            path: 'comments.user',
+            populate: [{
+             path: 'otherInformation'
+            }] 
+         })
+        .exec()
+        .then((publications) => {
+            if (publications !== null) {
+                var listPublication = [];
+                publications.forEach(item => {
+                    item.user_id = me;
+                    listPublication.push(this.publicationDTO(item, false));
+                })
+                return {status: 200, publication: listPublication}
+            }
+        })
     },
     getPublicByPicture: async function(id, me) {
         return Publication.findOne({img_id: id})
@@ -62,7 +76,7 @@ module.exports = {
             .then((publication) => {
                 if (publication !== null) {
                     if (publication.user_id._id.toString() == me._id.toString()) {
-                        return {status: 200, message: this.publicationDTO(publication)};
+                        return {status: 200, message: this.publicationDTO(publication, true)};
                     } else {
                         return {status: 200, message: 'ERROR_TYPE_PREMISION'};
                     }
@@ -74,10 +88,9 @@ module.exports = {
                 return {status: 503, message: 'ERROR_TYPE_SERVER'};
             })
     },
-    publicationDTO: function(item) {
-        return {
+    publicationDTO: function(item, type) {
+        var object = {
             _id: item._id,
-            user_id: userImpl.userDTO(item.user_id),
             text: item.text,
             image: item.image,
             location: !item.location.corrdinate.latitude ? null : item.location,
@@ -89,6 +102,12 @@ module.exports = {
             showPublication: !item.showPublication ? null : item.showPublication,
             img_id: !item.img_id ? null : item.img_id
         }
+        if (type) {
+            object.user_id = userImpl.userFriendDTO(item.user_id, false)
+        } else {
+            object.user_id = userImpl.userDTO(item.user_id);
+        }
+        return object;
     },
     savePublicaton: async function(
         user_id,

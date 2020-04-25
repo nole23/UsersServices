@@ -29,8 +29,19 @@ router
         var page = JSON.parse(req.query.page);
         var numberOfData = me.otherInformation.options.numberOfData;
         
-        var listPublication = await publicationImpl.getAllPublicationById(user_id, me._id, numberOfData, page);
-        return res.status(listPublication.status).send({publication: listPublication.publication, socket: 'SOCKET_NULL_POINT'});
+        var listPublication = null;
+        if (user_id.toString() == me._id.toString()) {
+            listPublication = await publicationImpl.getAllPublication(me, numberOfData, page);
+        } else {
+            var user = await UserImpl.findUserById(user_id);
+            if (user == null) {
+                listPublication = [];
+            } else {
+                var index = me.friends.listFriends.indexOf(user._id.toString());
+                listPublication = await publicationImpl.getAllPublicationById(user, me._id, numberOfData, page, index);
+            }
+        }
+        return res.status(200).send({publication: listPublication.publication, socket: 'SOCKET_NULL_POINT'});
     })
     .get('/image/:id', async function(req, res) {
         var id = req.params.id;

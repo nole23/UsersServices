@@ -20,6 +20,8 @@ router
             data = await notificationImpl.getAllVisitors(me, numberOfData, page);
         } else if (type.toString() == 'publication') {
             data = await notificationImpl.getAllNotification(me, numberOfData, page);
+        } else if (type.toString() == 'relationship') {
+            data = await notificationImpl.getAllRelationshio(me, numberOfData, page);
         }
         
         res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
