@@ -7,14 +7,14 @@ module.exports = {
         return UserFriends.findById(_id_collect)
             .exec()
             .then((res) => {
-                if (!res) return false;
+                if (!res) return {status: 404, message: 'ERROR_NOT_FIND_ITEM'};
                 res.listFriends.push(_id_friend);
 
                 res.save();
-                return true;
+                return {status: 200, message: 'SUCCESS_RELATIONSHIP_IS_SAVE'};
             })
             .catch((err) => {
-                return false;
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND'};
             })
     },
     delteFriends: function(_id_collect, _id_friend) {

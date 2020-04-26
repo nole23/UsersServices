@@ -32,16 +32,21 @@ module.exports = {
         return true;
       })
   },
+  save: function(data) {
+    var relationship = new Relationship(data);
+    relationship.save();
+    return true;
+  },
   delete: async function(requester_id, responser_id) {
     return Relationship.findOne({requester: requester_id, responder: responser_id})
       .exec()
       .then(res => {
-        if (res == null) return false;
+        if (res == null) return {status: 200, message: 'ERROR_NOT_FIND_ITEM'};
         res.remove();
-        return true;
+        return {status: 200, message: 'SUCCESS_SAVE_REMOVE'};
       })
       .catch(err => {
-        return false
+        return {status: 404, message: 'ERROR_SERVER_NOT_FOUND'}
       })
   },
   deleteByReqRes: function(requester_id, responser_id) {
@@ -95,6 +100,16 @@ module.exports = {
       })
       .catch(err => {
         return [];
+      })
+  },
+  statusRelationship: async function(user) {
+    return Relationship.count({responder: user._id})
+      .exec()
+      .then(count => {
+        return count
+      })
+      .catch(err => {
+        return 0
       })
   }
 }

@@ -26,6 +26,20 @@ router
         
         res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
+    .post('/', function(req, res) {
+        var me = res.locals.currUser;
+        var data = req.body;
+
+        notificationImpl.addNotification(
+            data.friends,
+            me,
+            data.type,
+            data.publication,
+            data.cordinate,
+            data.image);
+        
+        return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
+    })
     .put('/:type', function(req, res) {
         var me = res.locals.currUser;
         var type = req.body.type;

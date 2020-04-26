@@ -8,6 +8,8 @@ const globalConfigurate = require('../configuration/options.js');
 const userImpl = require('../function/userImpl.js');
 const userInformationImpl = require('../serviceImpl/userInformationImpl.js');
 const userConfigurationImpl = require('../serviceImpl/userConfigurationImpl.js');
+const notificationImpl = require('../serviceImpl/notificationImpl.js');
+const relationshipImpl = require('../serviceImpl/relationshipImpl.js');
 
 module.exports = {
     login: async function(credencial) {
@@ -21,7 +23,7 @@ module.exports = {
              })
             .populate('friends')
             .exec()
-            .then((user) =>{
+            .then(async (user) =>{
                 if (user === null) {
                     return {status: 200, message: 'ERROR_UNAUTHORIZED'}
                 }
@@ -46,10 +48,14 @@ module.exports = {
                 var data = {
                     user: userImpl.userAllDTO(user, false),
                     token: token,
-                    defaultOptions: userConfigurationImpl.optionsDTO(user.otherInformation.options)
+                    defaultOptions: userConfigurationImpl.optionsDTO(user.otherInformation.options),
+                    statusNotification: {
+                        notification: await notificationImpl.statusNotification(user),
+                        relationship: await relationshipImpl.statusRelationship(user)
+                    }
                 }
 
-                return {status: 200, message: data}
+                return {status: 200, message: data, socket: 'SOCKET_NULL_POINT'}
             })
             .catch((err) =>{
                 return {status: 404, message: 'ERROR_SERVER_NOT_FOUND'}

@@ -23,21 +23,27 @@ router
         if (isReq) {
             var isRes = await relationshipsImpl.isStatusSend(me, friend);
             if (isRes) {
-                var newI = {
+                var data = {
                     requester: me._id,
                     responder: friend._id
                 }
-                var relationship = new Relationship(newI)
+                
+                relationshipsImpl.save(data)
 
-                relationship.save(function(err) {
-                    if (err) return res.status(404).send({message: 'notSave'});
-                    return res.status(200).send({message: 'save', socket: 'SOCKET_NULL_POINT'})
+                return res.status(200).send({
+                    message: 'SUCCESS_SAVE', 
+                    socket: {
+                        type: 'RELATIONSHIP',
+                        link: 'new-relationship-',
+                        participants: [friend],
+                        data: me
+                    }
                 })
             } else {
-                return res.status(200).send({message: 'notSave', socket: 'SOCKET_NULL_POINT'})
+                return res.status(200).send({message: 'ERROR_NOT_SAVE_RELATIONSHIP', socket: 'SOCKET_NULL_POINT'})
             }
         } else {
-            return res.status(200).send({message: 'notSave', socket: 'SOCKET_NULL_POINT'})
+            return res.status(200).send({message: 'ERROR_NOT_SAVE_RELATIONSHIP', socket: 'SOCKET_NULL_POINT'})
         }
     })
     .put('/:id', async function(req, res) {
@@ -47,27 +53,37 @@ router
         var getIdFrinedsList = await userImpl.getIdFrinedsList(_id);
         var getMyIdFrinedsList = me.friends;
 
-        var isSaveFriend = await userFriendsImpl.saveFriend(getMyIdFrinedsList, getIdFrinedsList._id);
-        if (!isSaveFriend) return res.status(404).send({message: 'has not save friend in list', socket: 'SOCKET_NULL_POINT'});
+        var saveFriend = await userFriendsImpl.saveFriend(getMyIdFrinedsList, getIdFrinedsList._id);
+        if (saveFriend.status == 404) {
+            return res.status(200).send({message: saveFriend.message, socket: 'SOCKET_NULL_POINT'});
+        }
 
-        var isSaveFriend1 = await userFriendsImpl.saveFriend(getIdFrinedsList.friends, me._id);
-        if (!isSaveFriend1) return res.status(404).send({message: 'has not save friend in list', socket: 'SOCKET_NULL_POINT'});
+        var saveFriend1 = await userFriendsImpl.saveFriend(getIdFrinedsList.friends, me._id);
+        if (saveFriend1.status == 404) {
+            return res.status(200).send({message: saveFriend1.message, socket: 'SOCKET_NULL_POINT'});
+        }
         
         relationshipsImpl.deleteByReqRes(me._id, _id);
         relationshipsImpl.deleteByReqRes(_id, me._id);
 
         chatImpl.creatChaters(me, [_id])
-        return res.status(200).send({message: 'succifully', socket: 'SOCKET_NULL_POINT'});
+        return res.status(200).send({message: 'SUCCESS_ACCEPT_NEW_FRIEND', socket: 'SOCKET_NULL_POINT'});
     })
     .delete('/:id', async function(req, res) {
         var _id = req.params.id;
         var me = res.locals.currUser;
 
-        var isDelete = await relationshipsImpl.delete(_id, me._id);
-        if (isDelete) return res.status(200).send({isDelete: isDelete, socket: 'SOCKET_NULL_POINT'})
-        var isDeleteF = await relationshipsImpl.delete(me._id, _id);
-        if (isDeleteF) return res.status(200).send({isDelete: isDeleteF, socket: 'SOCKET_NULL_POINT'});
-        return res.status(404).send({isDelete: true, socket: 'SOCKET_NULL_POINT'})
+        var deleteP = await relationshipsImpl.delete(_id, me._id);
+        if (deleteP.status == 404) {
+            return res.status(200).send({isDelete: deleteP.message, socket: 'SOCKET_NULL_POINT'})
+        }
+
+        var deleteF = await relationshipsImpl.delete(me._id, _id);
+        if (deleteF.status == 404) {
+            return res.status(200).send({isDelete: deleteF.message, socket: 'SOCKET_NULL_POINT'})
+        } else {
+            return res.status(200).send({message: 'SUCCESS_SAVE_REMOVE', socket: 'SOCKET_NULL_POINT'})
+        }
     })
 
 module.exports = router;

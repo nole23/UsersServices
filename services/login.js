@@ -91,7 +91,7 @@ router
         } else if (loger.password === undefined || loger.password === null) {
             return res.status(200).send({message: 'ERROR_NULL_POINTER_EXEPTION', socket: 'SOCKET_NULL_POINT'})
         } else {
-
+            
             var data = await loginImpl.login(loger);
             return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
         }

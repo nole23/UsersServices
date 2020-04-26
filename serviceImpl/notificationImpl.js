@@ -6,17 +6,61 @@ module.exports = {
     // Prijatelj sam ja, a vlasnik je moj prijatelj
     // Sam sebi kad nesto uradim nista se ne desava 
     addNotification: function(friend, me, type = null, publication = null, cordinate = null, image = null) {
-        if (friend.toString() != me.toString()) {
-            var newNotification = new Notification();
+        if (friend._id.toString() != me._id.toString()) {
+
+            if (type !== 'visitor') {
+                var newNotification = new Notification();
         
-            newNotification.owner = me;
-            newNotification.friend = friend;
-            newNotification.type = type == null ? 'noStructur' : type;
-            newNotification.publication = publication;
-            newNotification.cordinate = cordinate;
-            newNotification.image = image;
-    
-            newNotification.save();
+                newNotification.owner = me;
+                newNotification.friend = friend;
+                newNotification.type = type == null ? 'noStructur' : type;
+                newNotification.publication = publication;
+                newNotification.cordinate = cordinate;
+                newNotification.image = image;
+        
+                newNotification.save();
+            } else {
+                Notification.find({friend: friend._id, owner: me._id, type: 'visitor'})
+                    .sort({dateNotification: -1})
+                    .limit(1)
+                    .exec()
+                    .then((notification => {
+                        if (notification.length > 0) {
+                            notification.forEach(element => {
+                                var date1 = new Date();
+                                var date2 = new Date(element.dateNotification);
+                                if(date1-date2 > 1440*60*1000){
+                                    var newNotification = new Notification();
+        
+                                    newNotification.owner = me;
+                                    newNotification.friend = friend;
+                                    newNotification.type = type == null ? 'noStructur' : type;
+                                    newNotification.publication = publication;
+                                    newNotification.cordinate = cordinate;
+                                    newNotification.image = image;
+                            
+                                    newNotification.save();
+                                } else {
+                                    console.log('nije vece')
+                                }
+                            })
+                        } else {
+                            var newNotification = new Notification();
+        
+                            newNotification.owner = me;
+                            newNotification.friend = friend;
+                            newNotification.type = type == null ? 'noStructur' : type;
+                            newNotification.publication = publication;
+                            newNotification.cordinate = cordinate;
+                            newNotification.image = image;
+                    
+                            newNotification.save();
+                        }
+                    }))
+                    .catch(err => {
+                        console.log('Server not save item')
+                    })
+            }
         }
     },
     getAllNotification: async function(me, limit, page) { 
@@ -117,6 +161,27 @@ module.exports = {
             })
             .catch(err => {
                 return {status: 404, message: 'ERROR_SERVER_NOT_FOUND'}
+            })
+    },
+    statusNotification: async function(user) {
+        return Notification.find({owner: user._id, status: false})
+            .exec()
+            .then(notifications => {
+                let status = {
+                    isNotificaton: 0,
+                    isVisitor: 0
+                }
+                notifications.forEach(element => {
+                    if (element.type == 'visitor') {
+                        status.isVisitor = status.isVisitor + 1;
+                    } else {
+                        status.isNotificaton = status.isNotificaton + 1;
+                    }
+                })
+                return status
+            })
+            .catch(err => {
+                return {isNotificaton: 0, isVisitor: 0}
             })
     }
 }
