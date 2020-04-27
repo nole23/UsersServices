@@ -37,7 +37,7 @@ router
             data.publication,
             data.cordinate,
             data.image);
-        
+
         return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
     .put('/:type', function(req, res) {

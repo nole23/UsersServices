@@ -1,6 +1,7 @@
 var Notification = require('../models/notification.js');
 var userImpl = require('../function/userImpl.js');
 var relationshipImpl = require('../serviceImpl/relationshipImpl.js');
+var syncImpl = require('../serviceImpl/syncImpl.js');
 
 module.exports = {
     // Prijatelj sam ja, a vlasnik je moj prijatelj
@@ -19,42 +20,102 @@ module.exports = {
                 newNotification.image = image;
         
                 newNotification.save();
+                syncImpl.resDateToClientServer({
+                    participants: [me._id],
+                    link: 'new-notification-',
+                    data: {
+                        user: friend,
+                        type: type
+                    }
+                })
             } else {
-                Notification.find({friend: friend._id, owner: me._id, type: 'visitor'})
+                Notification.find({owner: friend._id, friend: me._id, type: 'visitor'})
                     .sort({dateNotification: -1})
                     .limit(1)
                     .exec()
                     .then((notification => {
                         if (notification.length > 0) {
                             notification.forEach(element => {
-                                var date1 = new Date();
-                                var date2 = new Date(element.dateNotification);
-                                if(date1-date2 > 1440*60*1000){
+
+                                var nowTime = new Date();
+                                var serverTime = new Date(element.dateNotification)
+                                var lastOneHour = new Date(serverTime.getTime() + (1 * 1 * 60 * 60 * 1000))
+                                var lastTwelveHoursHour = new Date(serverTime.getTime() + (1 * 12 * 60 * 60 * 1000))
+                                var lastTwentyHoursHour = new Date(serverTime.getTime() + (1 * 24 * 60 * 60 * 1000))
+
+                                if (
+                                    (lastOneHour < nowTime) &&
+                                    !(lastTwelveHoursHour < nowTime) &&
+                                    !(lastTwentyHoursHour < nowTime)
+                                ) {
+                                    syncImpl.resDateToClientServer({
+                                        participants: [friend._id],
+                                        link: 'new-notification-',
+                                        data: {
+                                            user: me,
+                                            type: 'visitor'
+                                        }
+                                    })
+                                } else if (
+                                    (lastOneHour < nowTime) &&
+                                    (lastTwelveHoursHour < nowTime) &&
+                                    !(lastTwentyHoursHour < nowTime)
+                                ) {
+                                    element.dateNotification = new Date();
+                                    element.save();
+                                    syncImpl.resDateToClientServer({
+                                        participants: [friend._id],
+                                        link: 'new-notification-',
+                                        data: {
+                                            user: me,
+                                            type: 'visitor'
+                                        }
+                                    })
+                                } else if (
+                                    (lastOneHour < nowTime) &&
+                                    (lastTwelveHoursHour < nowTime) &&
+                                    (lastTwentyHoursHour < nowTime)
+                                ) {
+                                    element.remove();
                                     var newNotification = new Notification();
         
-                                    newNotification.owner = me;
-                                    newNotification.friend = friend;
+                                    newNotification.owner = friend;
+                                    newNotification.friend = me;
                                     newNotification.type = type == null ? 'noStructur' : type;
                                     newNotification.publication = publication;
                                     newNotification.cordinate = cordinate;
                                     newNotification.image = image;
                             
                                     newNotification.save();
-                                } else {
-                                    console.log('nije vece')
+                                    syncImpl.resDateToClientServer({
+                                        participants: [friend._id],
+                                        link: 'new-notification-',
+                                        data: {
+                                            user: me,
+                                            type: 'visitor'
+                                        }
+                                    })
                                 }
                             })
                         } else {
                             var newNotification = new Notification();
         
-                            newNotification.owner = me;
-                            newNotification.friend = friend;
+                            newNotification.owner = friend;
+                            newNotification.friend = me;
                             newNotification.type = type == null ? 'noStructur' : type;
                             newNotification.publication = publication;
                             newNotification.cordinate = cordinate;
                             newNotification.image = image;
                     
                             newNotification.save();
+                            syncImpl.resDateToClientServer({
+                                participants: [friend._id],
+                                link: 'new-notification-',
+                                data: {
+                                    user: me,
+                                    type: 'visitor'
+                                }
+                            })
                         }
                     }))
                     .catch(err => {
