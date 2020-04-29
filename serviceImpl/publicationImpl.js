@@ -171,11 +171,11 @@ module.exports = {
             .then((publication) => {
                 publication.likes.push(me._id);
                 publication.save();
-                notificationImpl.addNotification(me._id, user_id, 'like', publication._id, null, null)
-                return {status: 200, message: ''}
+                notificationImpl.addNotification(me, user_id, 'like', publication._id, null, null)
+                return {status: 200, message: 'SUCCESS_SAVE'}
             })
             .catch((err) => {
-                return {status: 404, like: ''}
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
             })
     },
     disLike: async function(user_id, publication_id, me) {
@@ -184,10 +184,10 @@ module.exports = {
             .then((publication) =>{
                 publication.likes.remove(me._id);
                 publication.save();
-                return {status: 200, message: ''}
+                return {status: 200, message: me}
             })
             .catch((err) => {
-                return {status: 404, like: ''}
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
             })
     },
     addComment: async function(item, object, me) {
@@ -202,10 +202,10 @@ module.exports = {
                 publication.comments.push(data);
                 publication.save();
                 notificationImpl.addNotification(me._id, publication.user_id, 'comment', publication._id, null, null)
-                return {status: 200, like: ''}
+                return {status: 200, message: notificationImpl}
             })
             .catch((err) => {
-                return {status: 404, like: ''}
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
             })
     },
     showHidePorfile: function(item) {
@@ -219,7 +219,7 @@ module.exports = {
             publication.save();
         })
         .catch((err) => {
-            return {status: 404, like: ''}
+            return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
         })
     },
     publicAgain: async function(id, me) {
@@ -239,7 +239,7 @@ module.exports = {
                 
             })
             .catch((err) => {
-                return {status: 404, message: 'not save'}
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
             })
     },
     delete: async function(id, me) {
@@ -259,7 +259,7 @@ module.exports = {
                 }
             })
             .catch((err) => {
-                return {status: 404, message: 'error'}
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
             })
     }
 }

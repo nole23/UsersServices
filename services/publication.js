@@ -57,7 +57,7 @@ router
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
-        return res.status(isSave.status).send({message: isSave.like, socket: 'SOCKET_NULL_POINT'});
+        return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
     .post('/location', async function(req, res) {
         var body = req.body;
@@ -127,14 +127,14 @@ router
 
         return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'});
     })
-    .put('/', async function(req, res) {
+    .put('/like', async function(req, res) {
         var user_id = req.body['user'];
         var publication_id = req.body['publication'];
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.like(user_id, publication_id, me);
         // Ovde treba napraviti metodu koja javlja sta se uradilo i kreira notifikaciju
-        return res.status(isSave.status).send({publication: isSave.like, socket: 'SOCKET_NULL_POINT'});
+        return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
     .put('/remove', async function(req, res) {
         var user_id = req.body['user'];
@@ -142,7 +142,7 @@ router
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.disLike(user_id, publication_id, me);
-        return res.status(isSave.status).send({publication: isSave.like, socket: 'SOCKET_NULL_POINT'});
+        return res.status(isSave.status).send({publication: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
     .put('/status/:type', function(req, res) {
         var me = res.locals.currUser;
