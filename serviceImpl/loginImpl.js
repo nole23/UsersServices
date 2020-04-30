@@ -10,11 +10,11 @@ const userInformationImpl = require('../serviceImpl/userInformationImpl.js');
 const userConfigurationImpl = require('../serviceImpl/userConfigurationImpl.js');
 const notificationImpl = require('../serviceImpl/notificationImpl.js');
 const relationshipImpl = require('../serviceImpl/relationshipImpl.js');
+const syncImpl = require('../serviceImpl/syncImpl.js');
 
 module.exports = {
     login: async function(credencial) {
         return User.findOne({email: credencial.email})
-            .populate('otherInformation')
             .populate({ 
                 path: 'otherInformation',
                 populate: [{
@@ -51,7 +51,8 @@ module.exports = {
                     defaultOptions: userConfigurationImpl.optionsDTO(user.otherInformation.options),
                     statusNotification: {
                         notification: await notificationImpl.statusNotification(user),
-                        relationship: await relationshipImpl.statusRelationship(user)
+                        relationship: await relationshipImpl.statusRelationship(user),
+                        messages: 0
                     }
                 }
 
