@@ -28,13 +28,28 @@ router
 
         var user = await userImpl.getUserById(_id, me._id);
 
-        if (user.status != 200) return res.status(user.status).send({user: null, relationship: null, socket: 'SOCKET_NULL_POINT'});
+        if (user.status != 200) {
+            return res.status(user.status).send({
+                user: null, 
+                relationship: null, 
+                socket: 'SOCKET_NULL_POINT'
+            });
+        }
         var isRequester = await relationshipImpl.getStatusRelationship(me._id, user.user._id);
         var isResponder = await relationshipImpl.getStatusRelationship(user.user._id, me._id);
-        return res.status(200).send({user: user.user, isRequester: isRequester, isResponder: isResponder, isFriends: user.friends, socket: 'SOCKET_NULL_POINT'});
+
+        return res.status(200).send({
+            user: user.user,
+            isRequester: isRequester,
+            isResponder: isResponder,
+            isFriends: user.friends,
+            socket: 'SOCKET_NULL_POINT'
+        });
     })
+    /**
+     * Get lit friends
+     */
     .get('/friends/:id/:page', async function(req, res) {
-        var _id = req.params.id;
         var page = req.params.page;
         var me = res.locals.currUser;
         var numberOfData = me.otherInformation.options.numberOfData;
@@ -47,23 +62,14 @@ router
      * Get all user bat create pagination
      * return 200 - List of users
      */
-    .get('/all/:page', function(req, res) {
+    .get('/all/:page', async function(req, res) {
         var pageReq = req.params.page;
 
         var limit = me.otherInformation.options.numberOfData;
         var page = Math.max(0, pageReq)
-        User.find({})
-            .limit(limit)
-            .skip(limit * page)
-            .populate('otherInformation')
-            .exec()
-            .then((users) => {
-                var users = [];
-                users.forEach(element => {
-                    users.push(UserImpl.userDTO(element));
-                });
-                return res.status(200).send({users: users, socket: 'SOCKET_NULL_POINT'});
-            })
+
+        var data = await userImpl.getAllUser(limit, page);
+        return res.status(200).send({users: data.message, socket: data.socket});
     })
     /**
      * Get user why not my friends
@@ -78,7 +84,6 @@ router
         var numberOfData = user.otherInformation.options.numberOfData;
         var page = Math.max(0, pageReq)
 
-        // Ja sam nekom poslao zahtjev
         var requestedOrResponder = await relationshipImpl.requestedOrResponder(user);
         var allRequestetOrResponder = requestedOrResponder.status == 404 ? [] : requestedOrResponder.message;
 
@@ -106,6 +111,9 @@ router
         var listUser = await userImpl.searchUser(text, numberOfData, page, me, allRequestetOrResponder, listFrineds);
         return res.status(listUser.status).send({users: listUser.usersList, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * 
+     */
     .post('/friends', async function(req, res) {
         var listOnlineFriends = req.body['listOnlineFriends'];
         var me = res.locals.currUser;

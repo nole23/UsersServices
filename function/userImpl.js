@@ -105,6 +105,20 @@ module.exports = {
                 return undefined;
             })
     },
+    findUserByEmail: async function(email) {
+        return User.findOne({email: email})
+            .exec()
+            .then(user => {
+                if (user != null) {
+                    return {status: 200, message: user}
+                } else {
+                    return {status: 200, message: null}
+                }
+            })
+            .catch(err => {
+                return {status: 404, message: null}
+            })
+    },
     sendMaile: function(user, verificationToken) {
         var transporter = nodemailer.createTransport(smtpTransport({
             host: 'smtp.gmail.com',
@@ -195,6 +209,80 @@ module.exports = {
             })
             .catch(err => {
                 return false;
+            })
+    },
+    editVerificationToken: async function(email) {
+        return User.findOne({email: email})
+            .exec()
+            .then(user => {
+                if (user == null) {
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
+                }
+
+                var random = '';
+                for (var i=0; i<7; i++) {
+                    random += '' + UserImpl.getRandomInt(10)
+                }
+
+                user.tokenForRestartPassword = random;
+                user.save();
+                this.sendMaileRestart(user);
+                return {status: 200, message: 'SUCCESS_SEND_NEW_VERIFICATION_TOKEN', socket: 'SOCKET_NULL_POINT'}
+            })
+            .catch(err => {
+                return {status: 400, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
+            })
+    },
+    restarPassword: async function(params) {
+        return User.findOne({email: params.email})
+            .exec()
+            .then(user =>{
+                if (user == null) {
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
+                }
+
+                if (user.tokenForRestartPassword === params.code) {
+                    return {status: 200, message: 'ERROR_VERIFICATION_CODE_IS_ERROR', socket: 'SOCKET_NULL_POINT'};
+                }
+
+                user.password = passwordHash.generate(params.passwrod);
+                user.save();
+                return {status: 200, message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'};
+            })
+            .catch(err => {
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
+            })
+    },
+    verificationProfile: async function(data) {
+        return User.findOne({otherInformation: data._id})
+            .exec()
+            .then(user => {
+                if (user == null) {
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
+                }
+
+                user.statusProfile = true;
+                user.save();
+                return {status: 200, message: 'SUCCESS_PROFILE_IS_VERIFICATION', socket: 'SOCKET_NULL_POINT'}
+            })
+            .catch(err => {
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
+            })
+    },
+    removeProfile: async function(id) {
+        return User.findById(id)
+            .exec()
+            .then(user => {
+                if (user == null) {
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
+                }
+
+                user.statusProfile = false;
+                user.save();
+                return {status: 200, message: 'SUCCESS_PROFILE_IS_REMOVE', socket: 'SOCKET_NULL_POINT'}
+            })
+            .catch(err => {
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
             })
     }
 }

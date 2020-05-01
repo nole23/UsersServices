@@ -6,8 +6,7 @@ var Auth = require('../meddlewares/auth.js');
 router.use('/', Auth.isLogged);
 router
     /**
-     * Funkcija koja ne radi nista, vrsi se samo provera da li je 
-     * ziv ruter
+     * Get all notification by type
      */
     .get('/', async function(req, res) {
         var me = res.locals.currUser;
@@ -26,6 +25,9 @@ router
         
         res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Add new notification
+     */
     .post('/', function(req, res) {
         var me = res.locals.currUser;
         var data = req.body;
@@ -40,6 +42,9 @@ router
 
         return res.status(200).send({message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'})
     })
+    /**
+     * Set new notification for friend and me
+     */
     .put('/:type', function(req, res) {
         var me = res.locals.currUser;
         var type = req.body.type;

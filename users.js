@@ -1,13 +1,7 @@
 const express = require('express');
-const path = require('path');
-const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const mongoSanitize = require('express-mongo-sanitize');
-const MediaImpl = require('./serviceImpl/mediaImpl.js');
-const SyncImpl = require('./serviceImpl/syncImpl.js');
-const PublicationImpl = require('./serviceImpl/publicationImpl.js');
-const NotificationImpl = require('./serviceImpl/notificationImpl.js');
 
 var mongodbUri = "mongodb://nole23:novica23@ds135796.mlab.com:35796/twoway_user"
 mongoose.connect(mongodbUri, {useNewUrlParser: true});
@@ -52,44 +46,4 @@ app.use('/api/geolocation', geolocation);
 app.use('/api/notification', notification);
 
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
-io.on('connection', function (socket) {
-    console.log('connected:', socket.client.id);
-    socket.on('imageProfil', function (data) {
-        MediaImpl.editImage(data);
-    });
-
-    socket.on('imagePublic', function (data) {
-        PublicationImpl.savePublicaton(
-            data.user_id,
-            data.text,
-            data.image,
-            data.datePublish,
-            data.likesCount,
-            data.likes,
-            data.comments,
-            data.address,
-            data.friends,
-            data.type,
-            data.img_id
-        );
-    });
-
-    socket.on('notification', function (data) {
-        NotificationImpl.addNotification(
-            data.friend,
-            data.me,
-            data.type,
-            data.publication,
-            data.cordinate,
-            data.image);
-    });
-
-    socket.on('test1', function (data) {
-        console.log('dosao je ovde socket')
-    });
-});
-
-app.set('socket-io', io);
 http.listen(port, () => console.log(`UserServer is start on port: ${ port }`))

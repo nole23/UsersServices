@@ -7,15 +7,18 @@ router.use('/', Auth.isLogged);
 
 router
     /**
-     * Funkcija koja vraca sve osobe sa kojima mozemo da chatujemo
+     * Find all chat by one user
      */
     .get('/', async function(req, res) {
         var me = res.locals.currUser;
         var numberOfData = me.otherInformation.options.numberOfData;
 
         var data = await chatImpl.getAllChatBayId(me, numberOfData, 0);
-        return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
+        return res.status(data.status).send({message: data.message, me: me, socket: 'SOCKET_NULL_POINT'})
     })
+    /**
+     * Get chat
+     */
     .get('/:id', async function(req, res) {
         var id = req.params.id;
 
@@ -23,9 +26,7 @@ router
         return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
     })
     /**
-     * Kreiramo novu listu za chatovanje,
-     * Ovo se desava prilikom prihvatanja zahtjeva za prijateljstvo automatski
-     * Ili ukoliko zelimo da zapocnemo chat sa nekim ko nam nije prijatelj
+     * Create new chat with user who not my friend
      */
     .post('/', async function(req, res) {
         var me = res.locals.chatImpl;
@@ -35,20 +36,16 @@ router
         return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
-     * Dodati novog clana u razgovor,
-     * ali tako da kada dodamo novog clana kreira se nova chat grupa
-     * i pocinje sve iz pocetka
+     * Not Implement
      */
     .put('/', async function(req, res) {
-
+        // TO DO 
     })
     /**
-     * Kad zelimo da izbrisemo prijatelja iz chata, poruke ostaju ali 
-     * brise se grupisanje
-     * osmisliti da to predje tamo na drugo mjesto da se ne obrise trajno
+     * Not Implement
      */
     .delete('/', async function(req, res) {
-
+        // TO DO
     })
 
 

@@ -1,20 +1,23 @@
 var express = require('express');
 var router = express.Router();
-
 var relationshipsImpl = require('../serviceImpl/relationshipImpl.js');
 var userImpl = require('../serviceImpl/userImpl.js');
 var userFriendsImpl = require('../serviceImpl/userFriendsImpl.js');
 var chatImpl = require('../serviceImpl/chatImpl.js');
-
 var Auth = require('../meddlewares/auth.js');
-var Relationship = require('../models/relationships.js');
 
 router.use('/',Auth.isLogged);
 
 router
+    /**
+     * First router
+     */
     .get('/', function(req, res) {
-
+        return res.send({message: 'server is life'})
     })
+    /**
+     * Send relationship
+     */
     .post('/', async function(req, res) {
         var friend = req.body['user'];
         var me = res.locals.currUser;
@@ -40,12 +43,21 @@ router
                     }
                 })
             } else {
-                return res.status(200).send({message: 'ERROR_NOT_SAVE_RELATIONSHIP', socket: 'SOCKET_NULL_POINT'})
+                return res.status(200).send({
+                    message: 'ERROR_NOT_SAVE_RELATIONSHIP', 
+                    socket: 'SOCKET_NULL_POINT'
+                })
             }
         } else {
-            return res.status(200).send({message: 'ERROR_NOT_SAVE_RELATIONSHIP', socket: 'SOCKET_NULL_POINT'})
+            return res.status(200).send({
+                message: 'ERROR_NOT_SAVE_RELATIONSHIP', 
+                socket: 'SOCKET_NULL_POINT'
+            })
         }
     })
+    /**
+     * Accept new friends
+     */
     .put('/:id', async function(req, res) {
         var _id = req.params.id;
         var me = res.locals.currUser;
@@ -69,6 +81,9 @@ router
         chatImpl.creatChaters(me, [_id])
         return res.status(200).send({message: 'SUCCESS_ACCEPT_NEW_FRIEND', socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Remove friend in my list friends and list my old friends
+     */
     .delete('/:id', async function(req, res) {
         var _id = req.params.id;
         var me = res.locals.currUser;

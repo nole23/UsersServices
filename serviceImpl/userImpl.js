@@ -221,11 +221,27 @@ module.exports = {
 
             userInformation.adress.corrdinate = geolocation;
             userInformation.save();
-
-            // TODO Dodati notifikaciju koja kaze gdje je 
         })
         .catch((error) => {
             console.log('greska na serveru')
         })
+    },
+    getAllUser: async function() {
+        User.find({})
+            .limit(limit)
+            .skip(limit * page)
+            .populate('otherInformation')
+            .exec()
+            .then((users) => {
+                var users = [];
+                users.forEach(element => {
+                    users.push(UserImpl.userDTO(element));
+                });
+                
+                return {status: 200, message: users, socket: 'SOCKET_NULL_POINT'}
+            })
+            .catch(err => {
+                return {status: 200, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
+            })
     }
 }

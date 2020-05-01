@@ -7,13 +7,15 @@ var Auth = require('../meddlewares/auth.js');
 router.use('/', Auth.isLogged);
 router
     /**
-     * Funkcija koja ne radi nista, vrsi se samo provera da li je 
-     * ziv ruter
+     * First router
      */
     .get('/', function(req, res) {
         return res.status(200).send('Router is life')
     })
-    .put('/', function(req, res) {
+    /**
+     * 
+     */
+    .put('/', async function(req, res) {
         var body = req.body;
         var me = res.locals;
         
@@ -21,7 +23,7 @@ router
             user: me.currUser,
             urlImage: body.link
         }
-        var ressService = mediaImpl.editImageLocal(data);
+        var ressService = await mediaImpl.editImageLocal(data);
         
         return res.status(200).send({message: ressService.message, socket: 'SOCKET_NULL_POINT'});
     })

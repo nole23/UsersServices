@@ -2,9 +2,6 @@ var Publication = require('../models/publication.js');
 var userImpl = require('../function/userImpl.js');
 const notificationImpl = require('../serviceImpl/notificationImpl.js');
 
-var ioc = require('socket.io-client');
-var socketc = ioc.connect('https://twoway1.herokuapp.com/', {reconnect: true});
-
 module.exports = {
 
     getAllPublicationById: async function(user, me_id, limit, page, isFriend) {
@@ -159,9 +156,6 @@ module.exports = {
         newPublication.img_id = img_id;
 
         newPublication.save();
-
-        socketc.emit('autoPublication-' + user_id, newPublication);
-        // TODO Ovo proslediti metodi koja sheruje na sve strane
 
         return newPublication;
     },

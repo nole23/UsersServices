@@ -6,7 +6,7 @@ const userImpl = require('../function/userImpl.js');
 router.use('/', Auth.isLogged);
 router
     /**
-     * Method for get all chat where one user
+     * Method for sync information for all service
      */
     .get('/', function(req, res) {
         res.status(200)

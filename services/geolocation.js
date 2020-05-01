@@ -8,8 +8,7 @@ const userImpl = require('../serviceImpl/userImpl.js');
 router.use('/', Auth.isLogged);
 router
     /**
-     * Funkcija koja ne radi nista, vrsi se samo provera da li je 
-     * ziv ruter
+     * Find Location by name city
      */
     .get('/:city', function(req, res) {
         var city = req.params.city;
@@ -19,6 +18,9 @@ router
                 return res.status(200).send({message: result, socket: 'SOCKET_NULL_POINT'});
             })
     })
+    /**
+     * Setn new location
+     */
     .post('/', function(req, res) {
         var geolocation = req.body;
         var me = res.locals;      

@@ -10,7 +10,6 @@ const userInformationImpl = require('../serviceImpl/userInformationImpl.js');
 const userConfigurationImpl = require('../serviceImpl/userConfigurationImpl.js');
 const notificationImpl = require('../serviceImpl/notificationImpl.js');
 const relationshipImpl = require('../serviceImpl/relationshipImpl.js');
-const syncImpl = require('../serviceImpl/syncImpl.js');
 
 module.exports = {
     login: async function(credencial) {
@@ -123,7 +122,7 @@ module.exports = {
                     
                     userFriends.save();
                     userImpl.sendMaile(user, userInformation.verificationToken);
-                    return {status: 200, message: ''}
+                    return {status: 200, message: 'SUCCESS_CREATE_NEW_PROFILE'}
                 } else {
                     user.remove();
                     userInformation.remove();
@@ -137,5 +136,4 @@ module.exports = {
             return {status: 200, message: 'ERROR_EMAIL_NOT_FREE'}
         } 
     }
-    
 }

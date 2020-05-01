@@ -4,8 +4,6 @@ var relationshipImpl = require('../serviceImpl/relationshipImpl.js');
 var syncImpl = require('../serviceImpl/syncImpl.js');
 
 module.exports = {
-    // Prijatelj sam ja, a vlasnik je moj prijatelj
-    // Sam sebi kad nesto uradim nista se ne desava 
     addNotification: function(friend, me, type = null, publication = null, cordinate = null, image = null) {
         if (friend._id.toString() != me._id.toString()) {
 

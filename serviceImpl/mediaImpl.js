@@ -1,9 +1,6 @@
-var express = require('express');
-var app = express();
 var jwt = require('jwt-simple');
 var User = require('../models/user.js');
 var UserInformation = require('../models/userInformation.js');
-var userImpl = require('../serviceImpl/userImpl.js');
 var publicationImpl = require('../serviceImpl/publicationImpl.js');
 
 module.exports = {

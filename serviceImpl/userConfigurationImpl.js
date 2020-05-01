@@ -1,4 +1,3 @@
-var User = require('../models/user.js');
 var UserConfiguration = require('../models/UserConfiguration.js');
 
 module.exports = {

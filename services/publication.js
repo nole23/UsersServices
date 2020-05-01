@@ -11,14 +11,14 @@ router.use('/', Auth.isLogged);
 
 router
     /**
-     * Funkcija koja ne radi nista, vrsi se samo provera da li je 
-     * ziv ruter
+     * First router
      */
     .get('/', function(req, res) {
         return res.status(200).send('Router is life')
     })
     /**
-     * Get all publication for this user
+     * Get all publication
+     * First for all user, second get all my publication
      * return 200 - null
      * return 200 - list publication
      * return 404 - server not found 
@@ -43,6 +43,9 @@ router
         }
         return res.status(200).send({publication: listPublication.publication, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * 
+     */
     .get('/image/:id', async function(req, res) {
         var id = req.params.id;
         var me = res.locals.currUser;
@@ -51,6 +54,9 @@ router
 
         return res.status(publicOfPicture.status).send({publication: publicOfPicture.message, socket: 'SOCKET_NULL_POINT'})
     })
+    /**
+     * Add comment in publication
+     */
     .post('/', async function(req, res) {
         var item = req.body['item'];
         var object = req.body['object'];
@@ -59,6 +65,9 @@ router
         isSave = await publicationImpl.addComment(item, object, me);
         return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Set new gps location
+     */
     .post('/location', async function(req, res) {
         var body = req.body;
         var me = res.locals;
@@ -107,6 +116,9 @@ router
         }
         return res.status(200).send({message: odg, socket: 'SOCKET_NULL_POINT'})
     })
+    /**
+     * 
+     */
     .post('/text', async function(req, res) {
         var body = req.body;
         var me = res.locals;
@@ -127,15 +139,20 @@ router
 
         return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Like publicaton
+     */
     .put('/like', async function(req, res) {
         var user_id = req.body['user'];
         var publication_id = req.body['publication'];
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.like(user_id, publication_id, me);
-        // Ovde treba napraviti metodu koja javlja sta se uradilo i kreira notifikaciju
         return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Remove publicaton
+     */
     .put('/remove', async function(req, res) {
         var user_id = req.body['user'];
         var publication_id = req.body['publication'];
@@ -144,9 +161,12 @@ router
         var isSave = await publicationImpl.disLike(user_id, publication_id, me);
         return res.status(isSave.status).send({publication: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
+    /**
+     * Set status from publication
+     */
     .put('/status/:type', function(req, res) {
         var me = res.locals.currUser;
-        var type = req.params.type; // Mozda nekad ako se promjeni arhitektura
+        var type = req.params.type;
         var item = req.body;
 
         if (me._id.toString() == item.user_id._id.toString()) {
@@ -168,6 +188,9 @@ router
             return res.status(200).send({message: 'error', socket: 'SOCKET_NULL_POINT'})
         }
     })
+    /**
+     * Reactive to ald publication
+     */
     .put('/public-again/:id', async function(req, res) {
         var _id = req.params.id;
         var me = res.locals.currUser;
@@ -194,6 +217,9 @@ router
         }
         
     })
+    /**
+     * Delte publication
+     */
     .delete('/:id', async function(req, res) {
         var _id = req.params.id;
         var me = res.locals.currUser;

@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-/**
- * listFriends: [{User: {...}}, {User: {...}}, ...]
- */
 const NotificationSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,

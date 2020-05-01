@@ -1,16 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-/**
- * Deskripcija
- * men,             -   pol
- * publicMedia: {
- *  me.jpg,         -   profilna slika
- *  me.jpg          -   naslovna slika
- * },
- * 1234567889,      -   datum kreiranja profila
- * 5642321889       -   datum rodjenja
- */
 const UserInformationSchema = new Schema({
     sex: {
         type: String,
