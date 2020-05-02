@@ -15,6 +15,7 @@ router
      * ziv ruter
      */
     .get('/', function(req, res) {
+        UserImpl.testSendMail()
         return res.status(200).send('Router is life')
     })
     /**

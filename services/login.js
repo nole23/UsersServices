@@ -48,22 +48,22 @@ router
         var code = req.params.code;
 
         var user = await UserImpl.findUserByEmail(email);
-        if (user == null) {
+        if (user.status != 200) {
             return res.status(200).send({
                 message: 'ERROR_NOT_FIND_USER', 
                 socket: 'SOCKET_NULL_POINT'});
-        }
-
-        if (parseInt(user.tokenForRestartPassword) === parseInt(code)) {
-            return res.status(200).send({
-                message: 'SUCCESS_VERIFICATION_CODE_IS_SUCCESS', 
-                socket: 'SOCKET_NULL_POINT'
-            })
         } else {
-            return res.status(200).send({
-                message: 'ERROR_VERIFICATION_CODE_IS_ERROR', 
-                socket: 'SOCKET_NULL_POINT'
-            });
+            if (parseInt(user['message'].tokenForRestartPassword) === parseInt(code)) {
+                return res.status(200).send({
+                    message: 'SUCCESS_VERIFICATION_CODE_IS_SUCCESS', 
+                    socket: 'SOCKET_NULL_POINT'
+                })
+            } else {
+                return res.status(200).send({
+                    message: 'ERROR_VERIFICATION_CODE_IS_ERROR', 
+                    socket: 'SOCKET_NULL_POINT'
+                });
+            }
         }
     })
     /**

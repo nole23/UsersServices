@@ -24,7 +24,7 @@ module.exports = {
             .exec()
             .then(async (user) =>{
                 if (user === null) {
-                    return {status: 200, message: 'ERROR_UNAUTHORIZED'}
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER'}
                 }
 
                 if (!passwordHash.verify(credencial.password, user.password)) {
