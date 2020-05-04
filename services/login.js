@@ -183,23 +183,15 @@ router
      * return 403 - Prodile not verificate
      * return 404 - Token not foud
      */
-    .put('/verify/:token', async function(req, res) {
-        var token = req. params.token;
+    .put('/verify/:username/:token', async function(req, res) {
+        var token = req.params.token;
+        var username = req.params.username;
 
-        var data = await userInformationImpl.verificationToken(token);
-        if (data.status != 200) {
-            return res.status(200).send({
-                message: data.message, 
-                socket: data.socket
-            }); 
-        } else {
-            var user = await UserImpl.verificationProfile(data.message);
-
-            return res.status(200).send({
-                message: user.message, 
-                socket: user.socket
-            }); 
-        }
+        var data = await userInformationImpl.verificationToken(username, token);
+        return res.status(200).send({
+            message: data.message, 
+            socket: data.socket
+        }); 
     })
     /**
      * Delete user profile. Profile can delete only own profile
