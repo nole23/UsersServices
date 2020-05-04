@@ -120,18 +120,18 @@ module.exports = {
             })
     },
     sendMaile: function(user, verificationToken) {
-        var transporter = nodemailer.createTransport({
+        var transporter = nodemailer.createTransport(smtpTransport({
             host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            requireTLS: true,
+            port: 465,
+            secure: true,
             auth: {
+                type: 'OAuth2',
                 user: 'twoway.owner@gmail.com',
                 pass: 'aplikacija1'
             }
-        });
+        }));
 
-        var link =  'https://twoway1.herokuapp.com/verify/' + user.username + '/' + verificationToken;
+        var link =  'https://twoway1.herokuapp.com/verify/' + user.username + '/' + user.verificationToken;
         var html = '<body>' +
                         '<h1>Dragi nas ' + user.firstName + '</h1>' +
                         '<br>' +
@@ -145,14 +145,13 @@ module.exports = {
                         '<p>Hvala, Vas TwoWay</p>'
                     '</body>'
 
-        
         var mailOptions = {
-            from:'twoway.own@gmail.com',
+            from:'twoway.owner@gmail.com',
             to: user.email,
             subject: "Email Verification",
             html: html.toString()
         };
-    
+
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {
                 console.log(error);
