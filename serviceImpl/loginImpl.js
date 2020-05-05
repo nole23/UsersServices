@@ -86,14 +86,15 @@ module.exports = {
                 profileImage: "./assets/picture/avatar1.png",
                 coverPhoto: "./assets/picture/cover.png"
             };
+
             userInformation.adress = {
-                country: !iPInfo == null ? iPInfo.country_name : null,
-                region: null,
-                city: null,
+                country: iPInfo.country_name != null ? iPInfo.country_name : null,
+                region: (iPInfo.regio != null && iPInfo.regio != undefined) ? iPInfo.regio : null,
+                city: (iPInfo.city != null && iPInfo.city != undefined) ? iPInfo.city : null,
                 corrdinate: {
-                    latitude: null,
-                    longitude: null,
-                    accuracy:  null
+                    latitude: (iPInfo.latitude != null && iPInfo.latitude != undefined) ? iPInfo.latitude : null,
+                    longitude: (iPInfo.longitude != null && iPInfo.longitude != undefined) ? iPInfo.longitude : null,
+                    accuracy:  (iPInfo.country_area != null && iPInfo.country_area != undefined) ? iPInfo.country_area : nul
                 }
             }
             userInformation.jobs = {
