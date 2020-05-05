@@ -269,7 +269,8 @@ module.exports = {
                     return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
                 }
 
-                if (user.tokenForRestartPassword.toString() === params.code) {
+                const token = user.tokenForRestartPassword;
+                if (token.toString() === params.count) {
                     return {status: 200, message: 'ERROR_VERIFICATION_CODE_IS_ERROR', socket: 'SOCKET_NULL_POINT'};
                 }
 
