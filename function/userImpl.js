@@ -1,6 +1,7 @@
 const User = require('../models/user.js');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
+var passwordHash = require('password-hash');
 const openGeocoder = require('node-open-geocoder');
 var UserInformation = require('../models/userInformation.js');
 
