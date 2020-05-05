@@ -139,6 +139,29 @@ router
 
         return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'});
     })
+    .post('/add-publication', async function(req, res) {
+        var body = req.body
+        var me = res.locals.currUser;
+
+        var data = await publicationImpl.savePublicaton(
+            me._id,
+            body['text'],
+            body['link'],
+            new Date(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            body['type'],
+            null
+        )
+
+        if (body['type'].toString() == 'imageProfil') {
+            UserImpl.setProfilImage(me, body['link']);
+        }
+        return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'})
+    })
     /**
      * Like publicaton
      */

@@ -314,5 +314,21 @@ module.exports = {
             .catch(err => {
                 return {status: 404, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
             })
+    },
+    setProfilImage: function(me, link) {
+        UserInformation.findById(me.otherInformation._id)
+            .exec()
+            .then(userInformation => {
+                if (userInformation == null) {
+                    return {status: 200, message: 'ERROR_NOT_FIND_USER', socket: 'SOCKET_NULL_POINT'}
+                }
+
+                userInformation.publicMedia.profileImage = link;
+                userInformation.save();
+                return {status: 200, message: 'SUCCESS_SAVE', socket: 'SOCKET_NULL_POINT'}
+            })
+            .catch(err => {
+                return {status: 404, message: 'ERROR_SERVER_NOT_FOUND', socket: 'SOCKET_NULL_POINT'}
+            })
     }
 }
