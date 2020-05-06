@@ -75,14 +75,14 @@ module.exports = {
                     if (publication.user_id._id.toString() == me._id.toString()) {
                         return {status: 200, message: this.publicationDTO(publication, true)};
                     } else {
-                        return {status: 200, message: 'ERROR_TYPE_PREMISION'};
+                        return {status: 200, message: 'ERROR_UNAUTHORIZED'};
                     }
                 } else {
                     return {status: 200, message: 'ERROR_TYPE_NULL'};
                 }
             })
             .catch((err) =>{
-                return {status: 503, message: 'ERROR_TYPE_SERVER'};
+                return {status: 503, message: 'ERROR_SERVER_NOT_FOUND'};
             })
     },
     publicationDTO: function(item, type) {
@@ -177,7 +177,7 @@ module.exports = {
             .then((publication) =>{
                 publication.likes.remove(me._id);
                 publication.save();
-                return {status: 200, message: me}
+                return {status: 200, message: 'SUCCESS_SAVE'}
             })
             .catch((err) => {
                 return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
@@ -195,7 +195,7 @@ module.exports = {
                 publication.comments.push(data);
                 publication.save();
                 notificationImpl.addNotification(me._id, publication.user_id, 'comment', publication._id, null, null)
-                return {status: 200, message: notificationImpl}
+                return {status: 200, message: data}
             })
             .catch((err) => {
                 return {status: 200, message: 'ERROR_SERVER_NOT_FOUND'}
@@ -245,10 +245,10 @@ module.exports = {
                         publication.remove();
                         return {status: 200, message: publication}
                     } else {
-                        return {status: 200, message: 'error'}
+                        return {status: 200, message: 'ERROR_NOT_DELETE_ITEM'}
                     }
                 } else {
-                    return {status: 404, message: 'permision'}
+                    return {status: 404, message: 'ERROR_UNAUTHORIZED'}
                 }
             })
             .catch((err) => {

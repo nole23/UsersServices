@@ -52,7 +52,7 @@ router
 
         var publicOfPicture = await publicationImpl.getPublicByPicture(id, me);
 
-        return res.status(publicOfPicture.status).send({publication: publicOfPicture.message, socket: 'SOCKET_NULL_POINT'})
+        return res.status(publicOfPicture.status).send({message: publicOfPicture.message, socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * Add comment in publication
@@ -63,7 +63,7 @@ router
         var me = res.locals.currUser;
 
         isSave = await publicationImpl.addComment(item, object, me);
-        return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
+        return res.status(200).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Set new gps location
@@ -140,14 +140,15 @@ router
             null,
             null,
             body['type'],
-            null
+            body['_id']
         )
 
         if (body['type'].toString() == 'imageProfil') {
             UserImpl.setProfilImage(me, body['link']);
         }
 
-        return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'})
+        
+        return res.status(200).send(JSON.stringify({message: data, socket: 'SOCKET_NULL_POINT'}))
     })
     /**
      * Like publicaton
@@ -169,7 +170,7 @@ router
         var me = res.locals.currUser;
 
         var isSave = await publicationImpl.disLike(user_id, publication_id, me);
-        return res.status(isSave.status).send({publication: isSave.message, socket: 'SOCKET_NULL_POINT'});
+        return res.status(isSave.status).send({message: isSave.message, socket: 'SOCKET_NULL_POINT'});
     })
     /**
      * Set status from publication
@@ -208,7 +209,7 @@ router
         var data = await publicationImpl.publicAgain(_id, me);
         if (data.message != null) {
             var save = await publicationImpl.savePublicaton(
-                me._id,
+                me,
                 data['message']['text'],
                 data['message']['image'],
                 new Date(),
