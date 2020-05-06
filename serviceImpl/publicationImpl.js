@@ -107,7 +107,7 @@ module.exports = {
         return object;
     },
     savePublicaton: async function(
-        user_id,
+        user,
         text,
         image,
         datePublish,
@@ -119,7 +119,7 @@ module.exports = {
         type = null,
         img_id = null
     ) {
-        if (!user_id) { 
+        if (!user) { 
             return null;
         }
         
@@ -144,7 +144,7 @@ module.exports = {
         }
 
         var newPublication = new Publication();
-        newPublication.user_id = user_id;
+        newPublication.user_id = user;
         newPublication.text = text;
         newPublication.image = image;
         newPublication.datePublish = datePublish;
@@ -156,7 +156,6 @@ module.exports = {
         newPublication.img_id = img_id;
 
         newPublication.save();
-
         return newPublication;
     },
     like: async function(user_id, publication_id, me) {

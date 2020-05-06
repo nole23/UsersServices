@@ -87,7 +87,7 @@ router
         }
 
         var data = await publicationImpl.savePublicaton(
-            me._id,
+            me,
             body.message,
             null,
             new Date(),
@@ -99,32 +99,18 @@ router
             'location',
             null
         );
-        
-        var odg = {
-            _id: data._id,
-            user_id: me._id,
-            text: body.message,
-            image: null,
-            datePublish: new Date(),
-            likes: [],
-            comments: [],
-            showPublication: {
-                removeStatus: false
-            },
-            location: newaddress,
-            friends: body.friends
-        }
-        return res.status(200).send({message: odg, socket: 'SOCKET_NULL_POINT'})
+
+        return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'})
     })
     /**
      * 
      */
     .post('/text', async function(req, res) {
         var body = req.body;
-        var me = res.locals;
+        var me = res.locals.currUser;
 
         var data = await publicationImpl.savePublicaton(
-            me._id,
+            me,
             body['message'],
             null,
             new Date(),
@@ -144,7 +130,7 @@ router
         var me = res.locals.currUser;
 
         var data = await publicationImpl.savePublicaton(
-            me._id,
+            me,
             body['text'],
             body['link'],
             new Date(),
@@ -160,6 +146,7 @@ router
         if (body['type'].toString() == 'imageProfil') {
             UserImpl.setProfilImage(me, body['link']);
         }
+
         return res.status(200).send({message: data, socket: 'SOCKET_NULL_POINT'})
     })
     /**
@@ -234,9 +221,9 @@ router
                 null
             )
 
-            return res.status(data.status).send({message: save, socket: 'SOCKET_NULL_POINT'})
+            return res.status(200).send({message: save, socket: 'SOCKET_NULL_POINT'})
         } else {
-            return res.status(data.status).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
+            return res.status(200).send({message: data.message, socket: 'SOCKET_NULL_POINT'})
         }
         
     })
