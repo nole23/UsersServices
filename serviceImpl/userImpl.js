@@ -197,13 +197,13 @@ module.exports = {
                 confing.profile.jab = !data.jab ? confing.profile.jab : data.jab;
                 confing.whoCanSeeProfile = !data.public ? confing.whoCanSeeProfile : data.public;
                 confing.numberOfData = !data.numberOfData ? confing.numberOfData : data.numberOfData;
+                confing.profile.address = !data.address ? confing.profile.address : data.address;
+                confing.profile.location = !data.location ? confing.profile.location : data.location;
                 
                 confing.search = !data.search ? confing.search : data.search;
                 confing.thems = !data.search ? confing.thems : data.thems;
                 confing.whoCanSendMessage = !data.whoCanSendMessage ? confing.whoCanSendMessage : data.whoCanSendMessage;
                 confing.online = !data.online ? confing.online : data.online;
-                confing.profile.address = !data.address ? confing.profile.address : data.address;
-                confing.profile.location = !data.location ? confing.profile.location : data.location;
                 confing.profile.publicationComment = !data.publicationComment ? confing.profile.publicationComment : data.publicationComment;
                 confing.profile.newPicturShow = !data.newPicturShow ? confing.profile.newPicturShow : data.newPicturShow;
 

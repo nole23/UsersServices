@@ -45,8 +45,8 @@ module.exports = {
             object.email = user.email;
             object.otherInformation.sex = user.otherInformation.sex;
             object.otherInformation.dateOfBirth = isProfle.birdthDay ? user.otherInformation.dateOfBirth : null;
-            object.otherInformation.adress = isProfle.address ? user.otherInformation.adress : {};
-            object.otherInformation.jobs = isProfle.jab ? user.otherInformation.jobs : {};
+            object.otherInformation.adress = isProfle.address ? user.otherInformation.adress : null;
+            object.otherInformation.jobs = isProfle.jab ? user.otherInformation.jobs : null;
         }
 
         if (whoCanSeeProfile == 'friends') {
@@ -159,7 +159,6 @@ module.exports = {
                 console.log(error);
                 return false;
             } else {
-                console.log('Email sent: ' + info.response);
                 return true;
             }
         });
@@ -198,7 +197,6 @@ module.exports = {
                 console.log(error);
                 return false;
             } else {
-                console.log('Email sent: ' + info.response);
                 return true;
             }
         });

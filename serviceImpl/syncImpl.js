@@ -3,7 +3,7 @@ var https = require('https');
 
 module.exports = {
     publication: function(data) {
-        // console.log(data)
+
     },
     resDateToClientServer: function(data) {
         var data = JSON.stringify(data)
@@ -25,7 +25,7 @@ module.exports = {
         var httpreq = http.request(options, function (response) {
             response.setEncoding('utf8');
             response.on('data', (d) => {
-                // console.log(d)
+                console.log(d);
             })
         });
         httpreq.write(data);

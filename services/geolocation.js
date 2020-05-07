@@ -23,8 +23,7 @@ router
      */
     .post('/', function(req, res) {
         var geolocation = req.body;
-        var me = res.locals;   
-        console.log('dosao ovde ne znam ')   
+        var me = res.locals;    
         userImpl.setNewCordinate(geolocation, me);
         return res.status(200).send({message: 'SUCCESS_SAVE_NEW_LOCATION', socket: 'SOCKET_NULL_POINT'})
     })
